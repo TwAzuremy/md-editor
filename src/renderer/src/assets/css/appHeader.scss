@@ -1,0 +1,33 @@
+@use "./base.scss";
+
+#app__header {
+    --component-padding: 8px;
+
+    display: flex;
+    align-items: center;
+    height: 48px;
+
+    .filename__container {
+        padding: var(--component-padding);
+    }
+
+    .window-drag {
+        flex: 1;
+        height: 100%;
+        -webkit-app-region: drag;
+        background-color: red;
+    }
+
+    .window-operation {
+        --svg-size: 16px;
+
+        display: flex;
+        gap: 8px;
+        padding: var(--component-padding);
+
+        svg {
+            width: var(--svg-size);
+            height: var(--svg-size);
+        }
+    }
+}

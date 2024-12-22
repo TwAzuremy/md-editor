@@ -1,6 +1,9 @@
 :root {
+    --ui-opacity-background: 0.12;
+
     --ui-background-page: #F3F6FD;
     --ui-background-components: #FFFFFF;
+    --ui-background-interactions: #EBEEF5;
 
     --ui-color-accent: #4091FF;
 
@@ -28,9 +31,10 @@
     $folder-color: #FFCA28;
     $file-color: #409EFF;
     --tree-color-folder: $folder-color;
-    --tree-background-folder: rgba($folder-color, 0.12);
+    --tree-background-folder: rgba($folder-color, var(--ui-opacity-background));
     --tree-color-file: $file-color;
-    --tree-background-file: rgba($file-color, 0.12);
+    --tree-background-file: rgba($file-color, var(--ui-opacity-background));
+
 }
 
 *,
@@ -47,6 +51,7 @@ ul {
 }
 
 body {
+    background-color: var(--ui-background-page);
     min-height: 100vh;
     font-family:
         Inter,

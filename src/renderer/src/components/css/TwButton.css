@@ -24,6 +24,9 @@
   --tree-background-folder: rgba($folder-color, var(--ui-opacity-background));
   --tree-color-file: $file-color;
   --tree-background-file: rgba($file-color, var(--ui-opacity-background));
+  --ui-animation-delay: 0.2s;
+  --ui-animation-cubicBezier-easeInOut: cubic-bezier(0.65, 0.05, 0.36, 1);
+  --ui-animation-cubicBezier-onBack: cubic-bezier(0.39, 0.85, 0.32, 1.28);
 }
 
 *,
@@ -46,6 +49,65 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.tw-button {
+  --button-padding: 8px;
+  --button-radius: 16px;
+  --button-color-hover: var(--ui-color-accent);
+  --button-background-fill: var(--ui-background-interactions);
+  --button-opacity-fill: 1.00;
+  --button-background-hover-fill: var(--ui-color-accent);
+  --button-opacity-hover-fill: 0.18;
+  border: none;
+  outline: none;
+  display: flex;
+  align-items: center;
+  padding: var(--button-padding);
+  border-radius: var(--button-radius);
+  transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-button:hover {
+  color: var(--button-color-hover);
+}
+.tw-button[data-transition=true]:hover {
+  transform: scale(1.05);
+}
+.tw-button[data-transition=true]:active {
+  transform: scale(0.95);
+}
+.tw-button[data-background=transparent], .tw-button[data-background=fill], .tw-button[data-background=hover-fill] {
+  background-color: transparent;
+}
+.tw-button[data-background=fill], .tw-button[data-background=hover-fill] {
+  position: relative;
+}
+.tw-button[data-background=fill]::after, .tw-button[data-background=hover-fill]::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--button-radius);
+}
+.tw-button[data-background=fill][data-transition=true]::after, .tw-button[data-background=hover-fill][data-transition=true]::after {
+  transform: scale(0);
+  transition: transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-button[data-background=fill][data-transition=true]:hover::after, .tw-button[data-background=hover-fill][data-transition=true]:hover::after {
+  transform: scale(1);
+}
+.tw-button[data-background=fill]::after {
+  background-color: var(--button-background-fill);
+  opacity: var(--button-opacity-fill);
+}
+.tw-button[data-background=hover-fill] {
+  background-color: transparent;
+}
+.tw-button[data-background=hover-fill]::after, .tw-button[data-background=hover-fill][data-transition=true]::after {
+  background-color: var(--button-background-hover-fill);
+  opacity: var(--button-opacity-hover-fill);
 }
 
 /*# sourceMappingURL=TwButton.css.map */

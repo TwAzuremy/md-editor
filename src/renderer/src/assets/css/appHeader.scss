@@ -15,19 +15,5 @@
         flex: 1;
         height: 100%;
         -webkit-app-region: drag;
-        background-color: red;
-    }
-
-    .window-operation {
-        --svg-size: 16px;
-
-        display: flex;
-        gap: 8px;
-        padding: var(--component-padding);
-
-        svg {
-            width: var(--svg-size);
-            height: var(--svg-size);
-        }
     }
 }

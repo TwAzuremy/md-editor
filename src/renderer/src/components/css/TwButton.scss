@@ -1,2 +1,82 @@
 @use "../../assets/css/base.scss";
 
+.tw-button {
+    --button-padding: 8px;
+    --button-radius: 16px;
+    --button-color-hover: var(--ui-color-accent);
+    --button-background-fill: var(--ui-background-interactions);
+    --button-opacity-fill: 1.00;
+    --button-background-hover-fill: var(--ui-color-accent);
+    --button-opacity-hover-fill: 0.18;
+
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    padding: var(--button-padding);
+    border-radius: var(--button-radius);
+    transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+    color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+    transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+
+    &:hover {
+        color: var(--button-color-hover);
+    }
+
+    &[data-transition="true"] {
+        &:hover {
+            transform: scale(1.05);
+        }
+
+        &:active {
+            transform: scale(0.95);
+        }
+    }
+
+    &[data-background="transparent"],
+    &[data-background="fill"],
+    &[data-background="hover-fill"] {
+        background-color: transparent;
+    }
+
+    &[data-background="fill"],
+    &[data-background="hover-fill"] {
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: var(--button-radius);
+        }
+
+        &[data-transition="true"] {
+            &::after {
+                transform: scale(0);
+                transition: transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+            }
+
+            &:hover::after {
+                transform: scale(1);
+            }
+        }
+    }
+
+    &[data-background="fill"]::after {
+        background-color: var(--button-background-fill);
+        opacity: var(--button-opacity-fill);
+    }
+
+    &[data-background="hover-fill"] {
+        background-color: transparent;
+
+        &::after,
+        &[data-transition="true"]::after {
+            background-color: var(--button-background-hover-fill);
+            opacity: var(--button-opacity-hover-fill);
+        }
+    }
+}

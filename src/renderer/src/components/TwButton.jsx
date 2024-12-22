@@ -10,11 +10,12 @@ import React from "react";
 const TwButton = React.forwardRef(({
                                        background = "transparent",
                                        transition = true,
+                                       className = "",
                                        children,
                                        ...props
                                    }, ref) => {
     return (
-      <button data-background={background} data-transition={transition} ref={ref} {...props}>
+      <button className={`tw-button ${className}`} data-background={background} data-transition={transition} ref={ref} {...props}>
           {children}
       </button>
     );

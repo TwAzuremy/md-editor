@@ -2,7 +2,7 @@ import "./assets/css/app.scss";
 
 // import { headingsPlugin, MDXEditor } from '@mdxeditor/editor';
 import "@mdxeditor/editor/style.css";
-import AppHeader from "./pages/AppHeader";
+import AppHeader from "./AppHeader";
 
 function App() {
     return (

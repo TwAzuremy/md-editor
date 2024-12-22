@@ -51,19 +51,21 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#app__header {
-  --component-padding: 8px;
+.window-operation {
+  --svg-size: 16px;
   display: flex;
-  align-items: center;
-  height: 48px;
-}
-#app__header .filename__container {
+  gap: 8px;
   padding: var(--component-padding);
 }
-#app__header .window-drag {
-  flex: 1;
-  height: 100%;
-  -webkit-app-region: drag;
+.window-operation svg {
+  width: var(--svg-size);
+  height: var(--svg-size);
+}
+.window-operation .tw-button {
+  color: var(--icon-color-unselected);
+}
+.window-operation .window-operation__close {
+  --button-color-hover: var(--ui-color-error);
 }
 
-/*# sourceMappingURL=appHeader.css.map */
+/*# sourceMappingURL=windowOperation.css.map */

@@ -56,6 +56,7 @@ body {
   --button-radius: 16px;
   --button-color-hover: var(--ui-color-accent);
   --button-background-fill: var(--ui-background-interactions);
+  --button-background-fill-hover: var(--button-background-fill);
   --button-opacity-fill: 1.00;
   --button-background-hover-fill: var(--ui-color-accent);
   --button-opacity-hover-fill: 0.18;
@@ -65,10 +66,15 @@ body {
   align-items: center;
   padding: var(--button-padding);
   border-radius: var(--button-radius);
-  transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-button > * {
+  z-index: 1;
 }
 .tw-button:hover {
   color: var(--button-color-hover);
+}
+.tw-button[data-transition=true] {
+  transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 }
 .tw-button[data-transition=true]:hover {
   transform: scale(1.05);
@@ -92,22 +98,25 @@ body {
   border-radius: var(--button-radius);
 }
 .tw-button[data-background=fill][data-transition=true]::after, .tw-button[data-background=hover-fill][data-transition=true]::after {
-  transform: scale(0);
-  transition: transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
-}
-.tw-button[data-background=fill][data-transition=true]:hover::after, .tw-button[data-background=hover-fill][data-transition=true]:hover::after {
-  transform: scale(1);
+  transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 }
 .tw-button[data-background=fill]::after {
   background-color: var(--button-background-fill);
   opacity: var(--button-opacity-fill);
 }
+.tw-button[data-background=fill]:hover::after {
+  background-color: var(--button-background-fill-hover);
+}
 .tw-button[data-background=hover-fill] {
   background-color: transparent;
 }
-.tw-button[data-background=hover-fill]::after, .tw-button[data-background=hover-fill][data-transition=true]::after {
+.tw-button[data-background=hover-fill]::after {
+  transform: scale(0);
   background-color: var(--button-background-hover-fill);
   opacity: var(--button-opacity-hover-fill);
+}
+.tw-button[data-background=hover-fill]:hover::after {
+  transform: scale(1);
 }
 
 /*# sourceMappingURL=TwButton.css.map */

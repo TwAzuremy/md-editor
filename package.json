@@ -5,6 +5,7 @@
   "main": "./out/main/index.js",
   "author": "https://github.com/TwAzuremy/md-editor",
   "homepage": "https://electron-vite.org",
+  "type": "module",
   "scripts": {
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
@@ -19,6 +20,7 @@
     "@electron-toolkit/preload": "^3.0.1",
     "@electron-toolkit/utils": "^3.0.0",
     "@mdxeditor/editor": "^3.19.3",
+    "electron-store": "^10.0.0",
     "sass": "^1.83.0"
   },
   "devDependencies": {

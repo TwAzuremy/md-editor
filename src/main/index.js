@@ -1,19 +1,43 @@
-import { app, shell, BrowserWindow, ipcMain } from "electron";
+import { app, shell, BrowserWindow, ipcMain, screen } from "electron";
 import { join } from "path";
+import Store from "electron-store";
 import { electronApp, optimizer, is } from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
+let mainWindow;
+const store = new Store();
+
 function createWindow() {
-    // Create the browser window.
-    const mainWindow = new BrowserWindow({
-        width: 1065,
+    // Get the window bounds from the store or set default values
+    const windowBounds = store.get("md-editor.windowBounds");
+
+    // Get the work area size of the primary display
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+
+    // Calculate the default x and y coordinates for the window
+    const defaultBounds = {
+        width: 1280,
         height: 720,
+        x: 0,
+        y: 0
+    };
+
+    // The default value for the calculation is the center position.
+    defaultBounds.x = (width - (windowBounds?.width || defaultBounds.width)) / 2;
+    defaultBounds.y = (height - (windowBounds?.height || defaultBounds.height)) / 2;
+
+    // Create the browser window.
+    mainWindow = new BrowserWindow({
+        width: windowBounds?.width || defaultBounds.width,
+        height: windowBounds?.height || defaultBounds.height,
+        x: windowBounds?.x || defaultBounds.x,
+        y: windowBounds?.y || defaultBounds.y,
         show: false,
         frame: false,
         autoHideMenuBar: true,
         ...(process.platform === "linux" ? { icon } : {}),
         webPreferences: {
-            preload: join(__dirname, "../preload/index.js"),
+            preload: join(__dirname, "../preload/index.mjs"),
             sandbox: false,
             nodeIntegration: false,
             contextIsolation: true
@@ -56,6 +80,27 @@ function createWindow() {
     mainWindow.on("unmaximize", () => {
         mainWindow.webContents.send("maximize", false);
     });
+
+    // Save window bounds
+    mainWindow.on("resize", saveWindowBounds);
+    mainWindow.on("move", saveWindowBounds);
+}
+
+/**
+ * Save the window bounds to the store.
+ *
+ * This function checks if the main window exists and retrieves its bounds.
+ * If the main window exists, the bounds are stored in the store under the key "md-editor.windowBounds".
+ */
+function saveWindowBounds() {
+    // Check if the main window exists
+    if (mainWindow) {
+        // Get the bounds of the main window
+        const bounds = mainWindow.getBounds();
+
+        // Store the bounds in the store
+        store.set("md-editor.windowBounds", bounds);
+    }
 }
 
 // This method will be called when Electron has finished
@@ -78,7 +123,7 @@ app.whenReady().then(() => {
     createWindow();
 
     app.on("activate", function() {
-        // On macOS it's common to re-create a window in the app when the
+        // On MACOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
     });

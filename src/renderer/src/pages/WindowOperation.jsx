@@ -5,19 +5,15 @@ import TwIconLoader from "../components/TwIconLoader";
 import React, { useEffect, useState } from "react";
 
 function windowOperation() {
-    const ipcRenderer = window.electron.ipcRenderer;
-
     const [isFullScreen, setIsFullScreen] = useState(false);
 
     useEffect(() => {
         // Listen for maximize event and update full screen status
-        ipcRenderer.on("maximize", (_, isFullScreen) => {
-            setIsFullScreen(isFullScreen);
-        });
+        window.windowControls.onMaximize(setIsFullScreen);
 
         // Cleanup function to remove event listener on component unmount
         return () => {
-            ipcRenderer.removeAllListeners("maximize");
+            window.windowControls.removeAllListeners("maximize");
         };
     }, []);
 

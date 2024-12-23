@@ -17,7 +17,7 @@ function TwIconLoader({ name, ...props }) {
      * It uses dynamic import to load the SVG file and sets the loaded SVG component in the state.
      */
     useEffect(() => {
-        import(`../assets/svg/${name}.svg?react`)
+        import(`@assets/svg/${name}.svg?react`)
           .then((module) => {
               // Set the loaded SVG component
               setSvgComponent(() => module.default);

@@ -1,7 +1,7 @@
 import "./css/windowOperation.scss";
 
-import TwButton from "../components/TwButton";
-import TwIconLoader from "../components/TwIconLoader";
+import TwButton from "@components/TwButton";
+import TwIconLoader from "@components/TwIconLoader";
 import React, { useEffect, useState } from "react";
 
 function windowOperation() {

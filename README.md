@@ -2,9 +2,11 @@
 
 An Electron application with React
 
-## Recommended IDE Setup
+`jsconfig` is an auxiliary Webstorm used to identify something, and **doesn't have** any **functional** effect on the project.
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
+## Tools
+
+vscode or Webstorm
 
 ## Project Setup
 

@@ -1,0 +1,62 @@
+.tw-tooltips {
+  --tooltips-distance: 8px;
+  --tooltips-transition-value: 8px;
+  --tooltips-color-text: var(--ui-color-accent);
+  position: relative;
+  display: inline-block;
+}
+.tw-tooltips__content {
+  position: absolute;
+  display: inline-block;
+  color: var(--tooltips-color-text);
+  background-color: var(--ui-background-components);
+  font-size: 0.875rem;
+  padding: 4px 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 3px 0 var(--ui-color-shadow);
+  opacity: 0;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+.tw-tooltips[data-trigger-mode=hover]:hover .tw-tooltips__content, .tw-tooltips[data-trigger-mode=click].tw-tooltips--active .tw-tooltips__content {
+  opacity: 1;
+}
+.tw-tooltips[data-direction=top] .tw-tooltips__content {
+  bottom: calc(100% + var(--tooltips-distance) - var(--tooltips-transition-value));
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), bottom var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-tooltips[data-direction=top][data-trigger-mode=hover]:hover .tw-tooltips__content, .tw-tooltips[data-direction=top][data-trigger-mode=click].tw-tooltips--active .tw-tooltips__content {
+  bottom: calc(100% + var(--tooltips-distance));
+}
+.tw-tooltips[data-direction=bottom] .tw-tooltips__content {
+  top: calc(100% + var(--tooltips-distance) - var(--tooltips-transition-value));
+  left: 50%;
+  transform: translateX(-50%);
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), top var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-tooltips[data-direction=bottom][data-trigger-mode=hover]:hover .tw-tooltips__content, .tw-tooltips[data-direction=bottom][data-trigger-mode=click].tw-tooltips--active .tw-tooltips__content {
+  top: calc(100% + var(--tooltips-distance));
+}
+.tw-tooltips[data-direction=left] .tw-tooltips__content {
+  right: calc(100% + var(--tooltips-distance) - var(--tooltips-transition-value));
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), right var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-tooltips[data-direction=left][data-trigger-mode=hover]:hover .tw-tooltips__content, .tw-tooltips[data-direction=left][data-trigger-mode=click].tw-tooltips--active .tw-tooltips__content {
+  right: calc(100% + var(--tooltips-distance));
+}
+.tw-tooltips[data-direction=right] .tw-tooltips__content {
+  left: calc(100% + var(--tooltips-distance) - var(--tooltips-transition-value));
+  top: 50%;
+  transform: translateY(-50%);
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), left var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+}
+.tw-tooltips[data-direction=right][data-trigger-mode=hover]:hover .tw-tooltips__content, .tw-tooltips[data-direction=right][data-trigger-mode=click].tw-tooltips--active .tw-tooltips__content {
+  left: calc(100% + var(--tooltips-distance));
+}
+
+/*# sourceMappingURL=TwTooltips.css.map */

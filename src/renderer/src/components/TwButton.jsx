@@ -15,9 +15,10 @@ const TwButton = React.forwardRef(({
                                        ...props
                                    }, ref) => {
     return (
-      <button className={`tw-button ${className}`} data-background={background} data-transition={transition} ref={ref} {...props}>
-          {children}
-      </button>
+        <button className={`tw-button ${className}`} data-background={background} data-transition={transition}
+                ref={ref} {...props}>
+            {children}
+        </button>
     );
 });
 

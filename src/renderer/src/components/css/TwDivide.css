@@ -1,0 +1,32 @@
+.tw-divide {
+  --tw-divide-depth: 2px;
+  --tw-divide-margin: 0px;
+  --tw-divide-side-dist: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tw-divide__line {
+  background-color: var(--ui-color-divide);
+  border-radius: calc(var(--tw-divide-depth) / 2);
+}
+.tw-divide[data-direction=horizontal] {
+  height: var(--tw-divide-depth);
+  width: 100%;
+  margin: var(--tw-divide-margin) 0;
+}
+.tw-divide[data-direction=horizontal] .tw-divide__line {
+  height: 100%;
+  width: calc(100% - 2 * var(--tw-divide-side-dist));
+}
+.tw-divide[data-direction=vertical] {
+  width: var(--tw-divide-depth);
+  height: 100%;
+  margin: 0 var(--tw-divide-margin);
+}
+.tw-divide[data-direction=vertical] .tw-divide__line {
+  width: 100%;
+  height: calc(100% - 2 * var(--tw-divide-side-dist));
+}
+
+/*# sourceMappingURL=TwDivide.css.map */

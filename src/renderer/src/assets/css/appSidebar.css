@@ -1,0 +1,53 @@
+#app__sidebar {
+  --sidebar-shrink-width: 48px;
+  --sidebar-expand-width: 256px;
+  --component-padding: 8px;
+  --icon-size: 24px;
+  width: calc(var(--sidebar-shrink-width) + var(--sidebar-expand-width) + 2px);
+  height: 100%;
+  display: flex;
+  background-color: var(--ui-background-components);
+  box-shadow: 2px 0 3px 0 var(--ui-color-shadow);
+  border-radius: 0 24px 24px 0;
+}
+#app__sidebar #logo {
+  width: calc(var(--icon-size) + 8px);
+  height: calc(var(--icon-size) + 8px);
+  padding: 4px;
+}
+#app__sidebar .sidebar__control {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: var(--component-padding);
+}
+#app__sidebar .sidebar__control .window-drag {
+  flex: 1;
+  width: 100%;
+  -webkit-app-region: drag;
+}
+#app__sidebar .sidebar__control .tw-tooltips {
+  --tooltips-distance: 20px;
+}
+#app__sidebar .sidebar__control .tw-button {
+  --button-padding: 4px;
+}
+#app__sidebar .sidebar__control .tw-button[data-change-color=true] {
+  color: var(--ui-color-accent);
+}
+#app__sidebar .sidebar__content {
+  --content-offset-magnification: 0;
+  display: flex;
+  overflow: hidden;
+}
+#app__sidebar .sidebar__content > div {
+  min-width: var(--sidebar-expand-width);
+}
+#app__sidebar .sidebar__content .file-management {
+  margin-left: calc(-1 * var(--content-offset-magnification) * var(--sidebar-expand-width));
+  transition: margin-left var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+
+/*# sourceMappingURL=appSidebar.css.map */

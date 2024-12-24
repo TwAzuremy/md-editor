@@ -8,9 +8,9 @@ function AppHeader() {
 
     return (
       <header id="app__header">
-          <h2 className={"filename__container"}>
+          <h1 className={"filename__container"}>
               {filename}
-          </h2>
+          </h1>
           <div className={"window-drag"}></div>
           <WindowOperation />
       </header>

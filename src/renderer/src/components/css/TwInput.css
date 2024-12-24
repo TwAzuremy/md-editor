@@ -1,0 +1,59 @@
+.tw-input__container {
+  --component-padding: 8px;
+  --svg-size: 24px;
+  width: calc(100% - var(--component-padding) * 2);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 var(--component-padding);
+  border-radius: 16px;
+  background-color: var(--ui-background-interactions);
+}
+.tw-input__container .tw-button {
+  --button-padding: 0px;
+  --svg-size: 16px;
+  color: var(--icon-color-unselected);
+}
+.tw-input__container .tw-button svg {
+  width: var(--svg-size);
+  height: var(--svg-size);
+}
+.tw-input__container .tw-button:hover {
+  color: var(--ui-color-error);
+}
+.tw-input__container .tw-input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+  height: 100%;
+  color: var(--ui-color-text-regular);
+}
+.tw-input__container .tw-input__prefix-icon, .tw-input__container .tw-input__suffix-icon {
+  width: var(--svg-size);
+  height: var(--svg-size);
+  color: var(--icon-color-unselected);
+  transition: color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+.tw-input__container .tw-input__prefix-icon svg, .tw-input__container .tw-input__suffix-icon svg {
+  width: var(--svg-size);
+  height: var(--svg-size);
+}
+.tw-input__container .tw-input__empty {
+  opacity: 1;
+  pointer-events: auto;
+}
+.tw-input__container .tw-input:placeholder-shown + .tw-input__empty {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+.tw-input__container .tw-input::-webkit-input-placeholder {
+  color: var(--ui-color-text-placeholder);
+}
+.tw-input__container:focus-within .tw-input__prefix-icon,
+.tw-input__container:focus-within .tw-input__prefix-icon {
+  color: var(--ui-color-accent);
+}
+
+/*# sourceMappingURL=TwInput.css.map */

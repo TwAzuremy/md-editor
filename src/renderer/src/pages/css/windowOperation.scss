@@ -10,8 +10,12 @@
         height: var(--svg-size);
     }
 
-    .tw-button {
-        color: var(--icon-color-unselected);
+    .window-operation__bubble {
+        &-close .tw-tooltips__content {
+            left: auto !important;
+            right: 0;
+            transform: translateX(0) !important;
+        }
     }
 
     .window-operation__close {

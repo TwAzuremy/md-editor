@@ -5,7 +5,9 @@
   height: 48px;
 }
 #app__header .filename__container {
-  padding: var(--component-padding);
+  font-size: 1.25rem;
+  line-height: 2rem;
+  padding-left: 16px;
 }
 #app__header .window-drag {
   flex: 1;

@@ -14,6 +14,7 @@
     align-items: center;
     padding: var(--button-padding);
     border-radius: var(--button-radius);
+    color: var(--icon-color-unselected);
 
     & > * {
         z-index: 1;
@@ -24,8 +25,7 @@
     }
 
     &[data-transition="true"] {
-        transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
-        color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+        transition: all var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
         transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 
         &:hover {

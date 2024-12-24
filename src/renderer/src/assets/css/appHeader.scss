@@ -6,7 +6,9 @@
     height: 48px;
 
     .filename__container {
-        padding: var(--component-padding);
+        font-size: 1.25rem;
+        line-height: 2rem;
+        padding-left: 16px;
     }
 
     .window-drag {

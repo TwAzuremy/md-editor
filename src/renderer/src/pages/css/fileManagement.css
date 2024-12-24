@@ -1,0 +1,15 @@
+.file-management {
+  --component-padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: var(--component-padding);
+}
+.file-management__header {
+  display: flex;
+  gap: 8px;
+}
+.file-management__header .tw-button svg {
+  transform: translateX(-1px);
+}
+
+/*# sourceMappingURL=fileManagement.css.map */

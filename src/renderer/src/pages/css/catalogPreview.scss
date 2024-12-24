@@ -1,0 +1,18 @@
+.catalog-preview {
+    --component-padding: 8px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    padding: var(--component-padding);
+
+    &__header {
+        display: flex;
+        gap: 8px;
+
+        .tw-button {
+            svg {
+                transform: translateX(-1px);
+            }
+        }
+    }
+}

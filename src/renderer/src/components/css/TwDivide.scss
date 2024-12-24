@@ -1,0 +1,48 @@
+@function swap-width-height($property) {
+    @if $property == 'width' {
+        @return height;
+    } @else if $property == 'height' {
+        @return width;
+    } @else {
+        @error "Invalid input: #{$property}. Only 'width' or 'height' are allowed.";
+    }
+}
+
+@mixin divide-direction-parsing($direction) {
+    $direction-reversal: swap-width-height($direction);
+
+    #{$direction}: var(--tw-divide-depth);
+    #{$direction-reversal}: 100%;
+
+    @if $direction == 'width' {
+        margin: 0 var(--tw-divide-margin);
+    } @else if $direction == 'height' {
+        margin: var(--tw-divide-margin) 0;
+    }
+
+    .tw-divide__line {
+        #{$direction}: 100%;
+        #{$direction-reversal}: calc(100% - 2 * var(--tw-divide-side-dist));
+    }
+}
+
+.tw-divide {
+    --tw-divide-depth: 2px;
+    --tw-divide-margin: 0px;
+    --tw-divide-side-dist: 8px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__line {
+        background-color: var(--ui-color-divide);
+        border-radius: calc(var(--tw-divide-depth) / 2);
+    }
+
+    @each $direction, $param in (horizontal: height, vertical: width) {
+        &[data-direction="#{$direction}"] {
+            @include divide-direction-parsing($param);
+        }
+    }
+}

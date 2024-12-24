@@ -1,0 +1,73 @@
+@mixin tooltips-position-center($param, $offset: 0) {
+    $center-param: if($param == top or $param == bottom, left, top);
+
+    #{$center-param}: 50%;
+    transform: if($center-param == top, translateY(-50% + $offset), translateX(-50% + $offset));
+}
+
+@function reverse-direction($direction) {
+    @if $direction == top {
+        @return bottom;
+    } @else if $direction == bottom {
+        @return top;
+    } @else if $direction == left {
+        @return right;
+    } @else if $direction == right {
+        @return left;
+    } @else {
+        @error "Invalid direction: #{$direction}. Expected 'top', 'bottom', 'left', or 'right'.";
+    }
+}
+
+.tw-tooltips {
+    --tooltips-distance: 8px;
+    --tooltips-transition-value: 8px;
+    --tooltips-color-text: var(--ui-color-accent);
+
+    position: relative;
+    display: inline-block;
+
+    &__content {
+        position: absolute;
+        display: inline-block;
+        color: var(--tooltips-color-text);
+        background-color: var(--ui-background-components);
+        font-size: 0.875rem;
+        padding: 4px 8px;
+        border-radius: 8px;
+        box-shadow: 0 2px 3px 0 var(--ui-color-shadow);
+        opacity: 0;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 10;
+    }
+
+    &[data-trigger-mode="hover"]:hover,
+    &[data-trigger-mode="click"].tw-tooltips--active {
+        .tw-tooltips__content {
+            opacity: 1;
+        }
+    }
+
+    @each $direction in (top, bottom, left, right) {
+        $direction-reversal: reverse-direction($direction);
+
+        &[data-direction="#{$direction}"] {
+            .tw-tooltips__content {
+                #{$direction-reversal}: calc(100% + var(--tooltips-distance) - var(--tooltips-transition-value));
+
+                @include tooltips-position-center($direction-reversal);
+
+                transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+                #{$direction-reversal} var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+            }
+
+            &[data-trigger-mode="hover"]:hover,
+            &[data-trigger-mode="click"].tw-tooltips--active {
+                .tw-tooltips__content {
+                    #{$direction-reversal}: calc(100% + var(--tooltips-distance));
+                }
+            }
+        }
+    }
+}

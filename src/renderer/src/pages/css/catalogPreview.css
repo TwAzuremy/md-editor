@@ -1,0 +1,15 @@
+.catalog-preview {
+  --component-padding: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+  padding: var(--component-padding);
+}
+.catalog-preview__header {
+  display: flex;
+  gap: 8px;
+}
+.catalog-preview__header .tw-button svg {
+  transform: translateX(-1px);
+}
+
+/*# sourceMappingURL=catalogPreview.css.map */

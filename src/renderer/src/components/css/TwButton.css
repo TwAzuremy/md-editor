@@ -13,6 +13,7 @@
   align-items: center;
   padding: var(--button-padding);
   border-radius: var(--button-radius);
+  color: var(--icon-color-unselected);
 }
 .tw-button > * {
   z-index: 1;
@@ -21,7 +22,7 @@
   color: var(--button-color-hover);
 }
 .tw-button[data-transition=true] {
-  transition: background-color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), color var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
+  transition: all var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 }
 .tw-button[data-transition=true]:hover {
   transform: scale(1.05);

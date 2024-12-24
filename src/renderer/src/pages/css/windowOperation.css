@@ -8,8 +8,10 @@
   width: var(--svg-size);
   height: var(--svg-size);
 }
-.window-operation .tw-button {
-  color: var(--icon-color-unselected);
+.window-operation .window-operation__bubble-close .tw-tooltips__content {
+  left: auto !important;
+  right: 0;
+  transform: translateX(0) !important;
 }
 .window-operation .window-operation__close {
   --button-color-hover: var(--ui-color-error);

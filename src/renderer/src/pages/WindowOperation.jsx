@@ -2,14 +2,15 @@ import "./css/windowOperation.scss";
 
 import TwButton from "@components/TwButton";
 import TwIconLoader from "@components/TwIconLoader";
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState} from "react";
+import TwTooltips from "@components/TwTooltips.jsx";
 
-function windowOperation() {
-    const [isFullScreen, setIsFullScreen] = useState(false);
+function WindowOperation() {
+    const [isMaximize, setIsMaximize] = useState(false);
 
     useEffect(() => {
         // Listen for maximize event and update full screen status
-        window.windowControls.onMaximize(setIsFullScreen);
+        window.windowControls.onMaximize(setIsMaximize);
 
         // Cleanup function to remove event listener on component unmount
         return () => {
@@ -33,21 +34,42 @@ function windowOperation() {
     };
 
     return (
-      <div className={"window-operation"}>
-          <TwButton className={"window-operation__minimize"} background={"hover-fill"} transition={true}
-                    onClick={WindowControls.handleMinimize} title={"最小化"}>
-              <TwIconLoader name={"minimize"} />
-          </TwButton>
-          <TwButton className={"window-operation__maximize"} background={"hover-fill"} transition={true}
-                    onClick={WindowControls.handleMaximize} title={isFullScreen ? "还原" : "最大化"}>
-              <TwIconLoader name={isFullScreen ? "restore" : "maximize"} />
-          </TwButton>
-          <TwButton className={"window-operation__close"} background={"hover-fill"} transition={true}
-                    onClick={WindowControls.handleClose} title={"关闭"}>
-              <TwIconLoader name={"close"} />
-          </TwButton>
-      </div>
+        <div className={"window-operation"}>
+            <TwTooltips
+                className={"window-operation__bubble-minimize"}
+                triggerEl={
+                    <TwButton className={"window-operation__minimize"} background={"hover-fill"} transition={true}
+                              onClick={WindowControls.handleMinimize}>
+                        <TwIconLoader name={"minimize"}/>
+                    </TwButton>
+                }
+                trigger={"hover"}
+                text={"Minimize"}
+                direction={"bottom"}/>
+            <TwTooltips
+                className={"window-operation__bubble-maximize"}
+                triggerEl={
+                    <TwButton className={"window-operation__maximize"} background={"hover-fill"} transition={true}
+                              onClick={WindowControls.handleMaximize}>
+                        <TwIconLoader name={isMaximize ? "restore" : "maximize"}/>
+                    </TwButton>
+                }
+                trigger={"hover"}
+                text={isMaximize ? "Restore": "Maximize"}
+                direction={"bottom"}/>
+            <TwTooltips
+                className={"window-operation__bubble-close"}
+                triggerEl={
+                    <TwButton className={"window-operation__close"} background={"hover-fill"} transition={true}
+                              onClick={WindowControls.handleClose}>
+                        <TwIconLoader name={"close"}/>
+                    </TwButton>
+                }
+                trigger={"hover"}
+                text={"Close"}
+                direction={"bottom"}/>
+        </div>
     );
 }
 
-export default windowOperation;
+export default WindowOperation;

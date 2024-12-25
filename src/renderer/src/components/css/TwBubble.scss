@@ -1,0 +1,85 @@
+@function reverse-direction($direction) {
+    @if $direction == top {
+        @return bottom;
+    } @else if $direction == bottom {
+        @return top;
+    } @else if $direction == left {
+        @return right;
+    } @else if $direction == right {
+        @return left;
+    } @else {
+        @error "Invalid direction: #{$direction}. Expected 'top', 'bottom', 'left', or 'right'.";
+    }
+}
+
+@function get-position($direction) {
+    $position-1: (top, center, bottom);
+    $position-2: (left, center, right);
+
+    @if $direction == top or $direction == bottom {
+        @return $position-2;
+    } @else if $direction == left or $direction == right {
+        @return $position-1;
+    } @else {
+        @error "Invalid direction: #{$direction}. Expected 'top', 'bottom', 'left', or 'right'.";
+    }
+}
+
+.tw-bubble {
+    --bubble-distance: 8px;
+
+    position: relative;
+    display: inline-block;
+
+    &__container {
+        position: absolute;
+        white-space: nowrap;
+        display: flex;
+        z-index: 10;
+        overflow: hidden;
+        background-color: var(--ui-background-floating);
+        border-radius: 0;
+        box-shadow: 0 2px 3px 0 var(--ui-color-shadow);
+        transition: width var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+        height var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut),
+        border-radius var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+    }
+
+    &.tw-bubble--active {
+        .tw-bubble__container {
+            border-radius: 16px;
+        }
+    }
+
+    $direction: (top, bottom, left, right);
+
+    @each $dir in $direction {
+        $reversed-dir: reverse-direction($dir);
+
+        @each $pos in get-position($dir) {
+            &[data-direction="#{$dir}"][data-position="#{$pos}"] .tw-bubble__container {
+                #{$reversed-dir}: calc(100% + var(--bubble-distance));
+
+                @if $pos == center {
+                    @if $dir == top or $dir == bottom {
+                        left: 50%;
+                        transform: translateX(-50%);
+                        height: 0;
+                    } @else {
+                        top: 50%;
+                        transform: translateY(-50%);
+                        width: 0;
+                    }
+                } @else {
+                    #{$pos}: 0;
+                    width: 0;
+                    height: 0;
+                }
+
+                @if $reversed-dir == right or $pos == right {
+                    justify-content: flex-end;
+                }
+            }
+        }
+    }
+}

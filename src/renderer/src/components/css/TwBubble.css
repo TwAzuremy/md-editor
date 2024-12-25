@@ -1,0 +1,98 @@
+.tw-bubble {
+  --bubble-distance: 8px;
+  position: relative;
+  display: inline-block;
+}
+.tw-bubble__container {
+  position: absolute;
+  white-space: nowrap;
+  display: flex;
+  z-index: 10;
+  overflow: hidden;
+  background-color: var(--ui-background-floating);
+  border-radius: 0;
+  box-shadow: 0 2px 3px 0 var(--ui-color-shadow);
+  transition: width var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), height var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), border-radius var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+.tw-bubble.tw-bubble--active .tw-bubble__container {
+  border-radius: 16px;
+}
+.tw-bubble[data-direction=top][data-position=left] .tw-bubble__container {
+  bottom: calc(100% + var(--bubble-distance));
+  left: 0;
+  width: 0;
+  height: 0;
+}
+.tw-bubble[data-direction=top][data-position=center] .tw-bubble__container {
+  bottom: calc(100% + var(--bubble-distance));
+  left: 50%;
+  transform: translateX(-50%);
+  height: 0;
+}
+.tw-bubble[data-direction=top][data-position=right] .tw-bubble__container {
+  bottom: calc(100% + var(--bubble-distance));
+  right: 0;
+  width: 0;
+  height: 0;
+  justify-content: flex-end;
+}
+.tw-bubble[data-direction=bottom][data-position=left] .tw-bubble__container {
+  top: calc(100% + var(--bubble-distance));
+  left: 0;
+  width: 0;
+  height: 0;
+}
+.tw-bubble[data-direction=bottom][data-position=center] .tw-bubble__container {
+  top: calc(100% + var(--bubble-distance));
+  left: 50%;
+  transform: translateX(-50%);
+  height: 0;
+}
+.tw-bubble[data-direction=bottom][data-position=right] .tw-bubble__container {
+  top: calc(100% + var(--bubble-distance));
+  right: 0;
+  width: 0;
+  height: 0;
+  justify-content: flex-end;
+}
+.tw-bubble[data-direction=left][data-position=top] .tw-bubble__container {
+  right: calc(100% + var(--bubble-distance));
+  top: 0;
+  width: 0;
+  height: 0;
+  justify-content: flex-end;
+}
+.tw-bubble[data-direction=left][data-position=center] .tw-bubble__container {
+  right: calc(100% + var(--bubble-distance));
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  justify-content: flex-end;
+}
+.tw-bubble[data-direction=left][data-position=bottom] .tw-bubble__container {
+  right: calc(100% + var(--bubble-distance));
+  bottom: 0;
+  width: 0;
+  height: 0;
+  justify-content: flex-end;
+}
+.tw-bubble[data-direction=right][data-position=top] .tw-bubble__container {
+  left: calc(100% + var(--bubble-distance));
+  top: 0;
+  width: 0;
+  height: 0;
+}
+.tw-bubble[data-direction=right][data-position=center] .tw-bubble__container {
+  left: calc(100% + var(--bubble-distance));
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+}
+.tw-bubble[data-direction=right][data-position=bottom] .tw-bubble__container {
+  left: calc(100% + var(--bubble-distance));
+  bottom: 0;
+  width: 0;
+  height: 0;
+}
+
+/*# sourceMappingURL=TwBubble.css.map */

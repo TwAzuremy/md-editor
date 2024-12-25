@@ -4,6 +4,9 @@
     white-space: nowrap;
     overflow: hidden;
     padding: var(--component-padding);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 
     &__header {
         display: flex;
@@ -14,5 +17,59 @@
                 transform: translateX(-1px);
             }
         }
+    }
+
+    &__title {
+        display: flex;
+        gap: 8px;
+        height: 40px;
+    }
+
+    &__folder-name {
+        flex: 1;
+        white-space: nowrap;
+        font-size: 1.25rem;
+        line-height: 2.5rem;
+        color: var(--ui-color-text-regular);
+    }
+
+    .tw-divide {
+        --tw-divide-side-dist: 0px;
+    }
+
+    .tw-bubble {
+        --bubble-distance: 19px;
+    }
+
+    &__add-panel {
+        padding: var(--component-padding);
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+
+        .tw-button {
+            --button-radius: 8px;
+            --button-scale-amplitude-hover: 1.02;
+            --button-scale-amplitude-active: 0.98;
+
+            gap: 8px;
+
+            span {
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+            }
+        }
+    }
+
+    &__add-folder {
+        color: var(--tree-color-folder);
+        --button-color-hover: var(--tree-color-folder);
+        --button-background-fill: var(--tree-background-folder);
+    }
+
+    &__add-file {
+        color: var(--tree-color-file);
+        --button-color-hover: var(--tree-color-file);
+        --button-background-fill: var(--tree-background-file);
     }
 }

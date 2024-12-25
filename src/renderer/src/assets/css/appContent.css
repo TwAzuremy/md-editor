@@ -1,3 +1,6 @@
-
+#app__content {
+  --component-padding: 16px;
+  padding: var(--component-padding);
+}
 
 /*# sourceMappingURL=appContent.css.map */

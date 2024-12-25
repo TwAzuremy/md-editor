@@ -11,9 +11,13 @@
   border-radius: 0 24px 24px 0;
 }
 #app__sidebar #logo {
-  width: calc(var(--icon-size) + 8px);
-  height: calc(var(--icon-size) + 8px);
-  padding: 4px;
+  --icon-size: 32px;
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+#app__sidebar #logo svg {
+  width: var(--icon-size);
+  height: var(--icon-size);
 }
 #app__sidebar .sidebar__control {
   height: 100%;
@@ -36,6 +40,9 @@
 }
 #app__sidebar .sidebar__control .tw-button[data-change-color=true] {
   color: var(--ui-color-accent);
+}
+#app__sidebar > .tw-divide {
+  min-width: var(--tw-divide-depth);
 }
 #app__sidebar .sidebar__content {
   --content-offset-magnification: 0;

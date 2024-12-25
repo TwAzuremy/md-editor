@@ -21,15 +21,15 @@ function TwTooltips({
                         direction = "bottom",
                         ...props
                     }) {
-    const bubble = React.useRef(null);
+    const tooltips = React.useRef(null);
 
     function handleClick() {
-        bubble.current.classList.toggle("tw-tooltips--active");
+        tooltips.current.classList.toggle("tw-tooltips--active");
     }
 
     return (
         <div className={"tw-tooltips " + (className || "")} data-trigger-mode={trigger} data-direction={direction}
-             ref={bubble}>
+             ref={tooltips}>
             {
                 React.cloneElement(triggerEl, {
                     className: `${triggerEl.props.className || ""} tw-tooltips__trigger`.trim(),

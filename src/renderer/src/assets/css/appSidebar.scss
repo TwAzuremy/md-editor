@@ -13,9 +13,15 @@
     border-radius: 0 24px 24px 0;
 
     #logo {
-        width: calc(var(--icon-size) + 8px);
-        height: calc(var(--icon-size) + 8px);
-        padding: 4px;
+        --icon-size: 32px;
+
+        width: var(--icon-size);
+        height: var(--icon-size);
+
+        svg {
+            width: var(--icon-size);
+            height: var(--icon-size);
+        }
     }
 
     .sidebar__control {
@@ -43,6 +49,10 @@
                 color: var(--ui-color-accent);
             }
         }
+    }
+
+    > .tw-divide {
+        min-width: var(--tw-divide-depth);
     }
 
     .sidebar__content {

@@ -26,7 +26,7 @@ function AppSidebar() {
                     triggerEl={
                         <TwButton onClick={handleSwapPanel.bind(this, 0)}
                                   data-change-color={panelDisplay === 0}>
-                            <TwIconLoader name={"folder"}/>
+                            <TwIconLoader name={"folder-line"}/>
                         </TwButton>
                     }
                     trigger={"hover"}

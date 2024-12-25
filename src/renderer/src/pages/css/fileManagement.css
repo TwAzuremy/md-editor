@@ -3,6 +3,9 @@
   white-space: nowrap;
   overflow: hidden;
   padding: var(--component-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 .file-management__header {
   display: flex;
@@ -10,6 +13,50 @@
 }
 .file-management__header .tw-button svg {
   transform: translateX(-1px);
+}
+.file-management__title {
+  display: flex;
+  gap: 8px;
+  height: 40px;
+}
+.file-management__folder-name {
+  flex: 1;
+  white-space: nowrap;
+  font-size: 1.25rem;
+  line-height: 2.5rem;
+  color: var(--ui-color-text-regular);
+}
+.file-management .tw-divide {
+  --tw-divide-side-dist: 0px;
+}
+.file-management .tw-bubble {
+  --bubble-distance: 19px;
+}
+.file-management__add-panel {
+  padding: var(--component-padding);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.file-management__add-panel .tw-button {
+  --button-radius: 8px;
+  --button-scale-amplitude-hover: 1.02;
+  --button-scale-amplitude-active: 0.98;
+  gap: 8px;
+}
+.file-management__add-panel .tw-button span {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+.file-management__add-folder {
+  color: var(--tree-color-folder);
+  --button-color-hover: var(--tree-color-folder);
+  --button-background-fill: var(--tree-background-folder);
+}
+.file-management__add-file {
+  color: var(--tree-color-file);
+  --button-color-hover: var(--tree-color-file);
+  --button-background-fill: var(--tree-background-file);
 }
 
 /*# sourceMappingURL=fileManagement.css.map */

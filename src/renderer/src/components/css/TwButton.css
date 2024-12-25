@@ -7,6 +7,8 @@
   --button-opacity-fill: 1.00;
   --button-background-hover-fill: var(--ui-color-accent);
   --button-opacity-hover-fill: 0.18;
+  --button-scale-amplitude-hover: 1.05;
+  --button-scale-amplitude-active: 0.95;
   border: none;
   outline: none;
   display: flex;
@@ -25,10 +27,10 @@
   transition: all var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut), transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 }
 .tw-button[data-transition=true]:hover {
-  transform: scale(1.05);
+  transform: scale(var(--button-scale-amplitude-hover));
 }
 .tw-button[data-transition=true]:active {
-  transform: scale(0.95);
+  transform: scale(var(--button-scale-amplitude-active));
 }
 .tw-button[data-background=transparent], .tw-button[data-background=fill], .tw-button[data-background=hover-fill] {
   background-color: transparent;

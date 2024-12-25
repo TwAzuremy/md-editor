@@ -7,6 +7,8 @@
     --button-opacity-fill: 1.00;
     --button-background-hover-fill: var(--ui-color-accent);
     --button-opacity-hover-fill: 0.18;
+    --button-scale-amplitude-hover: 1.05;
+    --button-scale-amplitude-active: 0.95;
 
     border: none;
     outline: none;
@@ -29,11 +31,11 @@
         transform var(--ui-animation-delay) var(--ui-animation-cubicBezier-onBack);
 
         &:hover {
-            transform: scale(1.05);
+            transform: scale(var(--button-scale-amplitude-hover));
         }
 
         &:active {
-            transform: scale(0.95);
+            transform: scale(var(--button-scale-amplitude-active));
         }
     }
 

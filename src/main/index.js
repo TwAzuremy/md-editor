@@ -1,7 +1,8 @@
-import { app, shell, BrowserWindow, ipcMain, screen } from "electron";
-import { join } from "path";
+import {app, shell, BrowserWindow, ipcMain, screen} from "electron";
+import path, {join} from "path";
+import {promises as fs} from "fs";
 import Store from "electron-store";
-import { electronApp, optimizer, is } from "@electron-toolkit/utils";
+import {electronApp, optimizer, is} from "@electron-toolkit/utils";
 import icon from "../../resources/icon.png?asset";
 
 let mainWindow;
@@ -12,7 +13,7 @@ function createWindow() {
     const windowBounds = store.get("md-editor.windowBounds");
 
     // Get the work area size of the primary display
-    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
+    const {width, height} = screen.getPrimaryDisplay().workAreaSize;
 
     // Calculate the default x and y coordinates for the window
     const defaultBounds = {
@@ -36,7 +37,7 @@ function createWindow() {
         frame: false,
         autoHideMenuBar: true,
         icon: icon,
-        ...(process.platform === "linux" ? { icon } : {}),
+        ...(process.platform === "linux" ? {icon} : {}),
         webPreferences: {
             preload: join(__dirname, "../preload/index.mjs"),
             sandbox: false,
@@ -51,7 +52,7 @@ function createWindow() {
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
-        return { action: "deny" };
+        return {action: "deny"};
     });
 
     // HMR for renderer base on electron-vite cli.
@@ -123,7 +124,7 @@ app.whenReady().then(() => {
 
     createWindow();
 
-    app.on("activate", function() {
+    app.on("activate", function () {
         // On MACOS it's common to re-create a window in the app when the
         // dock icon is clicked and there are no other windows open.
         if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -141,3 +142,41 @@ app.on("window-all-closed", () => {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+// Gets the structure of the folder
+async function readDirectory(dirPath) {
+    const result = [];
+    const queue = [{path: dirPath, children: result}];
+
+    while (queue.length > 0) {
+        const {path: currentDir, children} = queue.shift();
+
+        try {
+            const files = await fs.readdir(currentDir);
+
+            for (const file of files) {
+                const fullPath = path.join(currentDir, file);
+                const stats = await fs.stat(fullPath);
+
+                if (stats.isDirectory()) {
+                    const folderData = {
+                        name: file,
+                        children: []
+                    };
+                    children.push(folderData);
+                    queue.push({path: fullPath, children: folderData.children});
+                } else {
+                    children.push({name: file});
+                }
+            }
+        } catch (err) {
+            console.error("Read directory failed: ", err);
+        }
+    }
+
+    return result;
+}
+
+// const testDir = await readDirectory("D:\\PSA\\HTML\\cssAnimation");
+//
+// console.log(JSON.stringify(testDir, null, 2));

@@ -1,0 +1,102 @@
+.tw-tree {
+  --tree-gap: 4px;
+  --tree-color-twigs: var(--ui-background-interactions);
+  display: flex;
+  flex-direction: column;
+  gap: var(--tree-gap);
+  overflow: scroll;
+  padding: 0 var(--component-padding);
+  height: 100%;
+}
+.tw-tree__element, .tw-tree__children__container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--tree-gap);
+}
+.tw-tree__children {
+  --empty-space-magnification: 1;
+  position: relative;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+.tw-tree__children.tw-tree__children-expanded {
+  grid-template-rows: 1fr;
+}
+.tw-tree__children.tw-tree__children-expanded > .tw-tree__children__container > .tw-tree__element {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+.tw-tree__children::after {
+  position: absolute;
+  content: "";
+  width: 2px;
+  height: 100%;
+  background-color: var(--tree-color-twigs);
+  top: -32px;
+  left: -15px;
+}
+.tw-tree__children__container {
+  min-height: 0;
+  position: relative;
+  padding-left: calc(var(--empty-space-magnification) * 32px);
+}
+.tw-tree__children__container > .tw-tree__element {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+.tw-tree__children__container > [data-is-folder=true]:last-child > .tw-tree__children::after {
+  opacity: 0;
+}
+.tw-tree__name {
+  position: relative;
+}
+.tw-tree__name::after {
+  position: absolute;
+  content: "";
+  width: 2px;
+  border-top-left-radius: 1px;
+  border-top-right-radius: 1px;
+  height: 8px;
+  top: 0;
+  left: -15px;
+  background-color: var(--tree-color-twigs);
+}
+.tw-tree__name .tw-button {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  gap: 8px;
+}
+.tw-tree__name[data-file-type=folder] .tw-button {
+  color: var(--tree-color-folder);
+}
+.tw-tree__name[data-file-type=file] .tw-button {
+  color: var(--tree-color-file);
+}
+.tw-tree__twigs {
+  position: absolute;
+  top: 50%;
+  left: -26px;
+  transform: translateY(-50%);
+  color: var(--tree-color-twigs);
+}
+.tw-tree > .tw-tree__element > .tw-tree__name .tw-tree__twigs,
+.tw-tree > .tw-tree__element > .tw-tree__children > .tw-tree__children__container::after {
+  opacity: 0;
+  pointer-events: none;
+}
+.tw-tree__element + .tw-tree__element > .tw-tree__name::after {
+  height: calc(100% + 8px);
+  top: -36px;
+}
+.tw-tree .tree-children-fade-enter {
+  opacity: 0;
+}
+.tw-tree .tree-children-fade-enter-active {
+  opacity: 1;
+  transition: opacity var(--ui-animation-delay) var(--ui-animation-cubicBezier-easeInOut);
+}
+
+/*# sourceMappingURL=TwTree.css.map */

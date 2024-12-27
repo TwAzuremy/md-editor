@@ -7,6 +7,7 @@ import TwIconLoader from "@components/TwIconLoader.jsx";
 import TwInput from "@components/TwInput.jsx";
 import TwDivide from "@components/TwDivide.jsx";
 import TwBubble from "@components/TwBubble.jsx";
+import TwTree from "@components/TwTree.jsx";
 
 function FileManagement({...props}) {
     const searchInput = React.useRef(null);
@@ -48,6 +49,7 @@ function FileManagement({...props}) {
                     paddingCompensation={8}/>
             </div>
             <TwDivide direction={"horizontal"}/>
+            <TwTree />
         </div>
     );
 }

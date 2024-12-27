@@ -2,7 +2,6 @@
   --component-padding: 8px;
   white-space: nowrap;
   overflow: hidden;
-  padding: var(--component-padding);
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -10,6 +9,8 @@
 .file-management__header {
   display: flex;
   gap: 8px;
+  padding: var(--component-padding);
+  padding-bottom: 0;
 }
 .file-management__header .tw-button svg {
   transform: translateX(-1px);
@@ -18,6 +19,7 @@
   display: flex;
   gap: 8px;
   height: 40px;
+  padding: 0 var(--component-padding);
 }
 .file-management__folder-name {
   flex: 1;
@@ -28,6 +30,7 @@
 }
 .file-management .tw-divide {
   --tw-divide-side-dist: 0px;
+  padding: 0 var(--component-padding);
 }
 .file-management .tw-bubble {
   --bubble-distance: 19px;

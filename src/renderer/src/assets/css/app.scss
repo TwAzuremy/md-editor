@@ -1,2 +1,7 @@
 #app {
+    height: 100%;
+
+    display: grid;
+    grid-template-columns: var(--layout-width-side-nav-bar) max-content auto;
+    grid-template-rows: var(--layout-height-header) auto;
 }

@@ -1,18 +1,17 @@
 import "@assets/css/app.scss";
 
-// import { headingsPlugin, MDXEditor } from '@mdxeditor/editor';
-// import "@mdxeditor/editor/style.css";
-import AppHeader from "./AppHeader";
-import AppSidebar from "@renderer/AppSidebar.jsx";
-import AppContent from "@renderer/AppContent.jsx";
+import MDEHeader from "@renderer/container/MDEHeader.jsx";
+import MDESideNavBar from "@renderer/container/MDESideNavBar.jsx";
+import MDESidebar from "@renderer/container/MDESidebar.jsx";
+import MDEContent from "@renderer/container/MDEContent.jsx";
 
 function App() {
     return (
         <div id="app">
-            {/* <MDXEditor markdown={"# Hello World"} plugins={[headingsPlugin()]} /> */}
-            <AppHeader/>
-            <AppSidebar/>
-            <AppContent/>
+            <MDEHeader/>
+            <MDESideNavBar/>
+            <MDESidebar/>
+            <MDEContent/>
         </div>
     );
 }

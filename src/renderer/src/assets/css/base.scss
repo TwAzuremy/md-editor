@@ -1,4 +1,27 @@
 :root {
+    --ui-color-accent-color: #4091FF;
+    --ui-color-background: linear-gradient(to bottom right, #F0F5FF 25%, #D9E8FF 100%);
+
+    --ui-color-unchecked: #B5BECC;
+    --ui-color-checked: var(--ui-color-accent-color);
+
+    --ui-color-window-controller-default: var(--ui-color-unchecked);
+    --ui-color-window-controller-hover: var(--ui-color-accent-color);
+    --ui-color-window-controller-close-hover: #F56C6C;
+
+    --layout-height-header: 52px;
+    --layout-width-side-nav-bar: 64px;
+    --layout-width-sidebar-default: 288px;
+
+    --size-svg-minimum: 16px;
+    --size-svg-small: 20px;
+    --size-svg-normal: 24px;
+    --size-svg-large: 32px;
+
+    --animation-delay-normal: 0.2s;
+
+    --cubic-bezier-ease-in-out: cubic-bezier(0.65, 0.05, 0.36, 1);
+    --cubic-bezier-elasticity-on-back: cubic-bezier(0.39, 0.85, 0.32, 1.28);
 }
 
 *,
@@ -18,7 +41,7 @@ html {
 }
 
 body {
-    //background-color: var(--ui-background-page);
+    background: var(--ui-color-background);
     //overflow: hidden;
     min-height: 100vh;
     font-family: Inter,
@@ -36,4 +59,8 @@ body {
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+    height: 100vh;
 }

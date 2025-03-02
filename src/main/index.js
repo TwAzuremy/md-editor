@@ -1,3 +1,5 @@
+// noinspection JSIgnoredPromiseFromCall
+
 import {app, shell, BrowserWindow, ipcMain, screen} from "electron";
 import path, {join} from "path";
 import {promises as fs} from "fs";
@@ -10,6 +12,7 @@ const store = new Store();
 
 function createWindow() {
     // Get the window bounds from the store or set default values
+    // noinspection JSUnresolvedReference
     const windowBounds = store.get("md-editor.windowBounds");
 
     // Get the work area size of the primary display
@@ -18,7 +21,7 @@ function createWindow() {
     // Calculate the default x and y coordinates for the window
     const defaultBounds = {
         width: 1280,
-        height: 720,
+        height: 800,
         x: 0,
         y: 0
     };
@@ -71,16 +74,20 @@ function createWindow() {
         mainWindow.isMaximized() ? mainWindow.unmaximize() : mainWindow.maximize();
     });
 
-    ipcMain.on("window-close", () => {
-        mainWindow.close();
-    });
-
     mainWindow.on("maximize", () => {
         mainWindow.webContents.send("maximize", true);
     });
 
     mainWindow.on("unmaximize", () => {
         mainWindow.webContents.send("maximize", false);
+    });
+
+    ipcMain.handle('window-is-maximized', () => {
+        return mainWindow.isMaximized();
+    });
+
+    ipcMain.on("window-close", () => {
+        mainWindow.close();
     });
 
     // Save window bounds
@@ -101,6 +108,7 @@ function saveWindowBounds() {
         const bounds = mainWindow.getBounds();
 
         // Store the bounds in the store
+        // noinspection JSUnresolvedReference
         store.set("md-editor.windowBounds", bounds);
     }
 }

@@ -1,5 +1,5 @@
-import { resolve } from "path";
-import { defineConfig, externalizeDepsPlugin } from "electron-vite";
+import {resolve} from "path";
+import {defineConfig, externalizeDepsPlugin} from "electron-vite";
 import react from "@vitejs/plugin-react";
 import svgr from "vite-plugin-svgr";
 
@@ -20,18 +20,28 @@ export default defineConfig({
         },
         plugins: [
             react(),
-            svgr()
+            svgr({
+                svgrOptions: {
+                    icon: true
+                }
+            })
         ],
         css: {
             preprocessorOptions: {
                 scss: {
-                    api: "modern-compiler" // or "modern"
+                    api: "modern-compiler"
                 }
             }
         },
         server: {
             watch: {
-                usePolling: true   // 修复 HMR 热更新失效
+                // Fixed the issue that "HMR" hot update was invalid
+                usePolling: true
+            }
+        },
+        build: {
+            rollupOptions: {
+                treeshake: false
             }
         }
     }

@@ -1,0 +1,42 @@
+#window-controller {
+    display: flex;
+    padding: 8px;
+
+    .mde-button {
+        --mde-button-svg-size: var(--size-svg-small);
+        --mde-maximize-sec-rect-path-length: 71.3px;
+
+        // maximized
+        svg {
+            path {
+                transition: d var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+
+                &#sec-rect {
+                    stroke-dasharray: var(--mde-maximize-sec-rect-path-length);
+                    stroke-dashoffset: 0;
+
+                    // When maximizing, let the "rect" transition first, and then let the "sec-rect" transition, so a delay is set here.
+                    transition: stroke-dashoffset var(--animation-delay-normal) var(--cubic-bezier-ease-in-out) var(--animation-delay-normal);
+                }
+            }
+        }
+
+        // windowing
+        svg.windowing {
+            path {
+                // When windowing, let the "sec-rect" transition first, and then let the "rect" transition, so a delay is set here.
+                transition: d var(--animation-delay-normal) var(--cubic-bezier-ease-in-out) var(--animation-delay-normal);
+
+                &#sec-rect {
+                    stroke-dashoffset: var(--mde-maximize-sec-rect-path-length);
+
+                    transition: stroke-dashoffset var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+                }
+            }
+        }
+
+        &#window-controller__close {
+            --mde-button-hover-color: var(--ui-color-window-controller-close-hover);
+        }
+    }
+}

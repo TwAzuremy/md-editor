@@ -5,7 +5,7 @@ import path, {join} from "path";
 import {promises as fs} from "fs";
 import Store from "electron-store";
 import {electronApp, optimizer, is} from "@electron-toolkit/utils";
-import icon from "../../resources/icon.png?asset";
+import icon from "../../resources/icons/icon.png?asset";
 
 let mainWindow;
 const store = new Store();

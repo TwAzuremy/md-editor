@@ -1,0 +1,56 @@
+@use "../../assets/css/function" as *;
+
+.mde-tooltip {
+    --tooltip-distance: 8px;
+    --tooltip-hover-before-distance: 0px;
+
+    position: relative;
+
+    width: fit-content;
+    height: fit-content;
+
+    z-index: 100;
+
+    &__floating {
+        position: absolute;
+        padding: 8px 12px;
+
+        color: var(--ui-color-accent-color);
+        background: var(--ui-color-background-component);
+        border-radius: 12px;
+        @include shadow(bottom);
+
+        font-size: 0.875rem;
+        white-space: nowrap;
+
+        user-select: none;
+        pointer-events: none;
+
+        opacity: 0;
+        transition: all var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back),
+        opacity var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+    }
+
+    $direction: (top, bottom, left, right);
+    @each $dir in $direction {
+        &[data-direction="#{$dir}"] &__floating {
+            #{reverse-direction($dir)}: calc(100% + var(--tooltip-hover-before-distance));
+
+            @if $dir == "top" or $dir == "bottom" {
+                left: 50%;
+                transform: translateX(-50%);
+            } @else if $dir == "left" or $dir == "right" {
+                top: 50%;
+                transform: translateY(-50%);
+            }
+        }
+    }
+
+    &:hover {
+        .mde-tooltip__floating {
+            --tooltip-hover-before-distance: var(--tooltip-distance);
+
+            opacity: 1;
+        }
+    }
+}

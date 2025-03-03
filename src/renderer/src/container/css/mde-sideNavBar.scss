@@ -1,5 +1,60 @@
 #mde-sideNavBar {
     grid-area: 1 / 1 / 3 / 2;
 
-    background: red;
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+
+        padding: 12px;
+        user-select: none;
+
+        .mde-name {
+            width: 40px;
+
+            font-size: 0.875rem;
+            font-weight: bold;
+            line-height: 1.25rem;
+            letter-spacing: 2px;
+            text-align: center;
+
+            color: var(--ui-color-accent-color);
+        }
+
+        svg {
+            width: var(--size-svg-large);
+            height: var(--size-svg-large);
+        }
+    }
+
+    .mde-nav-list,
+    .mde-settings-list {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .mde-button {
+            --mde-button-svg-size: var(--size-svg-large);
+        }
+    }
+
+    .mde-nav-list {
+        flex: 1;
+    }
+
+    .mde-settings-list {
+        margin-bottom: 8px;
+    }
+
+    ._blank {
+        flex-grow: 1;
+
+        width: 100%;
+        //noinspection CssUnknownProperty
+        -webkit-app-region: drag;
+    }
 }

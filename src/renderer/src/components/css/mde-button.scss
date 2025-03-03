@@ -58,6 +58,10 @@
         color: var(--mde-button-hover-color);
     }
 
+    &.active {
+        color: var(--ui-color-accent-color);
+    }
+
     &.mde-button__elasticity {
         &:hover {
             transform: scale(1.05);

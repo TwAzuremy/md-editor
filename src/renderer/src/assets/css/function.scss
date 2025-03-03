@@ -1,0 +1,35 @@
+@use "sass:map";
+
+$direction-map: (
+        top: bottom,
+        bottom: top,
+        left: right,
+        right: left
+);
+
+
+@function reverse-direction($direction) {
+    @if not map.has-key($direction-map, $direction) {
+        @error "Invalid direction `#{$direction}`. Expected one of: #{map-keys($direction-map)}";
+    }
+
+    @return map.get($direction-map, $direction);
+}
+
+@mixin shadow($direction) {
+    @if not map.has-key($direction-map, $direction) {
+        @error "Invalid direction `#{$direction}`. Expected one of: #{map-keys($direction-map)}";
+    }
+
+    $x: 0px;
+    $y: 2px;
+
+    $shadow-map: (
+            top: $x 0-$y,
+            bottom: $x $y,
+            left: 0-$y $x,
+            right: $y $x
+    );
+
+    box-shadow: map.get($shadow-map, $direction) 8px var(--ui-color-shadow);
+}

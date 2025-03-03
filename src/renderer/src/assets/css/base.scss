@@ -1,6 +1,7 @@
 :root {
     --ui-color-accent-color: #4091FF;
     --ui-color-background: linear-gradient(to bottom right, #F0F5FF 25%, #D9E8FF 100%);
+    --ui-color-background-component: #FFFFFF;
 
     --ui-color-unchecked: #B5BECC;
     --ui-color-checked: var(--ui-color-accent-color);
@@ -8,6 +9,8 @@
     --ui-color-window-controller-default: var(--ui-color-unchecked);
     --ui-color-window-controller-hover: var(--ui-color-accent-color);
     --ui-color-window-controller-close-hover: #F56C6C;
+
+    --ui-color-shadow: rgba(90, 111, 138, 0.2);
 
     --layout-height-header: 52px;
     --layout-width-side-nav-bar: 64px;

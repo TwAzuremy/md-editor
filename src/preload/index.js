@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from "electron";
 import { electronAPI } from "@electron-toolkit/preload";
-// import {logger} from "@renderer/utils/Logger.js";
+import {logger} from "../utils/Logger.js";
 
 // Custom APIs for renderer
 const api = {};
@@ -19,7 +19,7 @@ if (process.contextIsolated) {
             isMaximized: () => ipcRenderer.invoke('window-is-maximized')
         });
     } catch (error) {
-        // logger.error("Failed to expose Electron API in the renderer process:", error);
+        logger.error("Failed to expose Electron API in the renderer process: ", error);
     }
 } else {
     window.electron = electronAPI;

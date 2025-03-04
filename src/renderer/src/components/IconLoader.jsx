@@ -1,4 +1,6 @@
-import {lazy, Suspense} from "react";
+import React, {lazy, memo, Suspense} from "react";
+
+const iconCache = {};
 
 /**
  * A function component that loads an SVG icon by name.
@@ -13,14 +15,21 @@ import {lazy, Suspense} from "react";
  * @example
  * <IconLoader name={"icon-name"}/>
  */
-const IconLoader = ({name, ...props}) => {
-    const Icon = lazy(() => import(`@assets/icons/${name}.svg?react`));
+const IconLoader = memo(({name, ...props}) => {
+    // Get the icon component from the cache.
+    let Icon = iconCache[name];
+
+    // If not, the icon is imported, and stored in the cache.
+    if (!Icon) {
+        Icon = lazy(() => import(`@assets/icons/${name}.svg?react`));
+        iconCache[name] = Icon;
+    }
 
     return (
         <Suspense fallback={null}>
             <Icon {...props} />
         </Suspense>
     );
-};
+});
 
 export default IconLoader;

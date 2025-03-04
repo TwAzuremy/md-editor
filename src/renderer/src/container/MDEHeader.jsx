@@ -4,7 +4,6 @@ import WindowController from "@components/WindowController.jsx";
 function MDEHeader() {
     return (
         <header id={"mde-header"}>
-            <div className="_blank"></div>
             <WindowController />
         </header>
     )

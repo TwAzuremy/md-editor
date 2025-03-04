@@ -3,12 +3,5 @@
 
     display: flex;
     align-items: center;
-
-    ._blank {
-        flex-grow: 1;
-
-        height: 100%;
-        //noinspection CssUnknownProperty
-        //-webkit-app-region: drag;
-    }
+    justify-content: flex-end;
 }

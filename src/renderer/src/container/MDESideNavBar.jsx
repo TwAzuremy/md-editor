@@ -11,13 +11,14 @@ import MDETooltip from "@components/MDETooltip.jsx";
  * @function MDESideNavBar
  *
  * @param {function} navClickEvent The event handler for the navigation click event.
+ * @param {[{id: string, tip: string, icon: ReactElement}]} [navList=[]] A list of information in the sidebar.
  *
  * @returns {ReactElement} The rendered component.
  *
  * @example
- * <MDESideNavBar navClickEvent={(id) => console.log(id)}/>
+ * <MDESideNavBar navClickEvent={(id) => console.log(id)} navList={[{...}, ...]}/>
  */
-function MDESideNavBar({navClickEvent}) {
+function MDESideNavBar({navClickEvent, navList = []}) {
     const Icon = lazy(() => import(`@resources/icons/icon.svg?react`));
     const [renderId, setRenderId] = useState(null);
 
@@ -36,19 +37,16 @@ function MDESideNavBar({navClickEvent}) {
                 </Suspense>
             </header>
             <div className={"mde-nav-list"}>
-                <MDETooltip tip={"File Manager"} direction={"right"}>
-                    <MDEButton className={"mde-nav__button"}
-                               active={renderId === "file-manager"}
-                               icon={<IconLoader name={"file-manager"}/>}
-                               onClick={() => navClickHandle("file-manager")}/>
-                </MDETooltip>
-                {/* TODO: [Deleted] Here is the test case. */}
-                <MDETooltip tip={"Test"} direction={"right"}>
-                    <MDEButton className={"mde-nav__button"}
-                               active={renderId === "test"}
-                               icon={<IconLoader name={"settings"}/>}
-                               onClick={() => navClickHandle("test")}/>
-                </MDETooltip>
+                {
+                    navList.map(({id, tip, icon}) => (
+                        <MDETooltip tip={tip} direction={"right"} key={MDETooltip.id}>
+                            <MDEButton className={"mde-nav__button"}
+                                       active={renderId === id}
+                                       icon={icon}
+                                       onClick={() => navClickHandle(id)}/>
+                        </MDETooltip>
+                    ))
+                }
                 <div className={"_blank"}></div>
             </div>
             <div className={"mde-settings-list"}>

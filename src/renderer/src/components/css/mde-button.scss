@@ -23,6 +23,9 @@
     transition: color var(--animation-delay-normal) var(--cubic-bezier-ease-in-out),
     transform var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back);
 
+    //noinspection CssUnknownProperty
+    -webkit-app-region: no-drag;
+
     &__icon,
     &__text {
         z-index: 1;

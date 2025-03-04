@@ -1,0 +1,21 @@
+.window-drag {
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    background: transparent;
+    z-index: 0;
+
+    //noinspection CssUnknownProperty
+    -webkit-app-region: drag;
+
+    &[data-direction=horizontal] {
+        right: 0;
+        height: var(--layout-height-header);
+    }
+
+    &[data-direction=vertical] {
+        bottom: 0;
+        width: var(--layout-width-side-nav-bar);
+    }
+}

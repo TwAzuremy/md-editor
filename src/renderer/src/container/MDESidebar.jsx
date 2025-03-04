@@ -1,5 +1,7 @@
 import "@renderer/container/css/mde-sidebar.scss";
 
+import React from "react";
+
 /**
  * A sidebar component for markdown-editor.
  *
@@ -18,7 +20,7 @@ function MDESidebar({renderId = null, pageList = []}) {
         <aside id={"mde-sidebar"}>
             {
                 pageList.map(({id, component}) => {
-                    return id === renderId && component;
+                    return id === renderId && React.cloneElement(component, {key: id});
                 })
             }
         </aside>

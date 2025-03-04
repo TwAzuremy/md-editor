@@ -39,7 +39,7 @@ function MDESideNavBar({navClickEvent, navList = []}) {
             <div className={"mde-nav-list"}>
                 {
                     navList.map(({id, tip, icon}) => (
-                        <MDETooltip tip={tip} direction={"right"} key={MDETooltip.id}>
+                        <MDETooltip tip={tip} direction={"right"} key={id}>
                             <MDEButton className={"mde-nav__button"}
                                        active={renderId === id}
                                        icon={icon}

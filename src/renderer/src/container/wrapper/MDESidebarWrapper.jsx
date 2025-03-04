@@ -2,6 +2,7 @@ import MDESideNavBar from "@renderer/container/MDESideNavBar.jsx";
 import MDESidebar from "@renderer/container/MDESidebar.jsx";
 import {useState} from "react";
 import IconLoader from "@components/IconLoader.jsx";
+import MDEFileManager from "@renderer/container/sidebar/MDEFileManager.jsx";
 
 /**
  * @prop {string} id Id of the nav bar and sidebar page switch.
@@ -16,7 +17,7 @@ const sidebarList = [
         "id": "file-manager",
         "tip": "File Manager",
         "icon": <IconLoader name={"file-manager"}/>,
-        "component": <span>File Manager</span>
+        "component": <MDEFileManager/>
     },
     // TODO: [Deleted] Here is the test case.
     {
@@ -30,6 +31,7 @@ const sidebarList = [
 function MDESidebarWrapper() {
     const [renderId, setRenderId] = useState(null);
 
+    // noinspection JSValidateTypes
     return (
         <>
             <MDESideNavBar navClickEvent={setRenderId} navList={sidebarList}/>

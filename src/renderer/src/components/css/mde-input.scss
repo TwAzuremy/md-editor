@@ -1,0 +1,71 @@
+.mde-input {
+    --mde-input-height: 48px;
+    --mde-input-svg-size: var(--size-svg-normal);
+    --mde-input-clear-size: var(--size-svg-small);
+
+    //noinspection CssUnknownProperty
+    -webkit-app-region: no-drag;
+
+    width: 100%;
+    height: var(--mde-input-height);
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 12px;
+
+    border-radius: calc(var(--mde-input-height) / 2);
+    background: var(--ui-color-background-input);
+
+    &__icon {
+        width: var(--mde-input-svg-size);
+        height: var(--mde-input-svg-size);
+        color: var(--ui-color-unchecked);
+
+        transition: color var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+
+        svg {
+            width: var(--mde-input-svg-size);
+            height: var(--mde-input-svg-size);
+        }
+    }
+
+    &__input {
+        flex: 1;
+
+        border: none;
+        outline: none;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+
+        font-size: 1rem;
+        color: var(--ui-color-text-primary);
+
+        &::placeholder {
+            color: var(--ui-color-text-placeholder);
+        }
+    }
+
+    &__clear {
+        --mde-button-padding: 4px;
+        --mde-button-svg-size: var(--mde-input-clear-size);
+        --mde-button-color: var(--ui-color-close);
+        --mde-button-hover-color: var(--mde-button-color);
+
+        opacity: 1;
+        pointer-events: auto;
+
+        transition: opacity var(--animation-delay-normal) var(--cubic-bezier-ease-in-out),
+        transform var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back);
+    }
+
+    &__input:placeholder-shown + &__clear {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    &:focus-within &__icon {
+        color: var(--ui-color-accent-color);
+    }
+}

@@ -17,7 +17,7 @@ import React from "react";
  * @returns {ReactElement}
  *
  * @example
- * <MDEButton icon={<IconLoader="icon"/>} name={"Icon-Text Button"}/>
+ * <MDEButton icon={<IconLoader="icon"/>} text={"Text"} name={"Icon-Text Button"}/>
  */
 function MDEButton({
                        icon,

@@ -1,3 +1,19 @@
+// source: https://fonts.google.com/specimen/Poppins
+@font-face {
+    font-family: "Poppins";
+    src: url("font/Poppins.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+}
+
+// source: https://www.siyuanziti.cn/21.html
+@font-face {
+    font-family: "SourceHanSans";
+    src: url("font/SourceHanSansSC.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+}
+
 :root {
     --ui-color-accent-color: #4091FF;
     --ui-color-background: linear-gradient(to bottom right, #F0F5FF 25%, #D9E8FF 100%);
@@ -50,20 +66,8 @@ html {
 
 body {
     background: var(--ui-color-background);
-    //overflow: hidden;
     min-height: 100vh;
-    font-family: Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Fira Sans',
-    'Droid Sans',
-    'Helvetica Neue',
-    sans-serif;
+    font-family: "Poppins", "SourceHanSans", -apple-system, sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

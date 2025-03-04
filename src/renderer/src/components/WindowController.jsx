@@ -24,11 +24,6 @@ function WindowController() {
      * Updates the SVG path and visual state based on the maximized state of the window.
      *
      * @param {boolean} isMaximized - Indicates whether the window is maximized.
-     *
-     * This function modifies the SVG path to reflect the current window state,
-     * toggling between "maximized" and "windowing" paths. It also manages the
-     * path transition by toggling the "windowing" class and updates the React
-     * state after the transition to ensure animations are executed correctly.
      */
     function morph(isMaximized) {
         const svg = controllerEl.current.querySelector("#window-controller__maximize svg");
@@ -60,7 +55,7 @@ function WindowController() {
                 onClick={() => window.windowControls.send("window-maximize")}/>
             <MDEButton
                 id={"window-controller__close"}
-                icon={<IconLoader name={"close"}/>}
+                icon={<IconLoader name={"window-close"}/>}
                 isElasticity={false}
                 onClick={() => window.windowControls.send("window-close")}/>
         </div>

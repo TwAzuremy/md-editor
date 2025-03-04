@@ -5,6 +5,8 @@ import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDETooltip from "@components/MDETooltip.jsx";
 
+const LOGO = lazy(() => import(`@resources/icons/icon.svg?react`));
+
 /**
  * A navigation bar component for markdown-editor.
  *
@@ -19,7 +21,6 @@ import MDETooltip from "@components/MDETooltip.jsx";
  * <MDESideNavBar navClickEvent={(id) => console.log(id)} navList={[{...}, ...]}/>
  */
 function MDESideNavBar({navClickEvent, navList = []}) {
-    const Icon = lazy(() => import(`@resources/icons/icon.svg?react`));
     const [renderId, setRenderId] = useState(null);
 
     // TODO: [Fixed] After updating the value of useState, too many components may be re-rendered, causing the page to flicker noticeably.
@@ -31,9 +32,13 @@ function MDESideNavBar({navClickEvent, navList = []}) {
     return (
         <nav id={"mde-sideNavBar"}>
             <header id={"mde-sideNavBar__header"}>
-                <h6 className={"mde-name"}>MDE</h6>
+                <h6 className={"mde-name"}>
+                    {/* Tested many methods, "text-align: justify;" None of them have taken effect properly. */}
+                    {/* So I had to use the Flex layout to solve it. */}
+                    {"MDE".split("").map((char, index) => <span key={index}>{char}</span>)}
+                </h6>
                 <Suspense fallback={null}>
-                    <Icon className={"mde-icon"}/>
+                    <LOGO className={"mde-icon"}/>
                 </Suspense>
             </header>
             <div className={"mde-nav-list"}>

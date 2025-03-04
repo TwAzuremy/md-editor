@@ -11,7 +11,7 @@ function App() {
             {/* Window drag area used for the header */}
             <WindowDrag direction={"horizontal"}/>
             <MDEHeader/>
-            {/* Window drag area for the sidebar */}
+            {/* Window drag area used for the sidebar */}
             <WindowDrag direction={"vertical"}/>
             <MDESidebarWrapper />
             <MDEContent/>

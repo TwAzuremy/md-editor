@@ -18,13 +18,14 @@
         z-index: 1;
 
         .mde-name {
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
             width: 40px;
 
             font-size: 0.875rem;
             font-weight: bold;
             line-height: 1.25rem;
-            letter-spacing: 2px;
-            text-align: center;
 
             color: var(--ui-color-accent-color);
         }

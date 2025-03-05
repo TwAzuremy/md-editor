@@ -33,3 +33,29 @@ $direction-map: (
 
     box-shadow: map.get($shadow-map, $direction) 8px var(--ui-color-shadow);
 }
+
+@mixin transparency-background($background, $opacity: 1, $z-index: 0) {
+    &::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+
+        background: $background;
+        opacity: $opacity;
+
+        z-index: $z-index;
+    }
+}
+
+@mixin force-lock-size($size) {
+    min-width: $size;
+    width: $size;
+    max-width: $size;
+
+    min-height: $size;
+    height: $size;
+    max-height: $size;
+}

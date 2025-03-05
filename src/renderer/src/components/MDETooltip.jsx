@@ -37,7 +37,9 @@ function MDETooltip({children, tip, direction = "top", ...props}) {
     return (
         <div className={"mde-tooltip"} data-direction={direction} {...props}>
             {children}
-            <span className={"mde-tooltip__floating"}>{tip}</span>
+            <p className={"mde-tooltip__floating"}>
+                <span>{tip}</span>
+            </p>
         </div>
     );
 }

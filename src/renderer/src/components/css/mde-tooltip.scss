@@ -3,20 +3,21 @@
 .mde-tooltip {
     --tooltip-distance: 8px;
     --tooltip-hover-before-distance: 0px;
+    --tooltip-z-index: 100;
 
     position: relative;
 
     width: fit-content;
     height: fit-content;
 
-    z-index: 100;
+    z-index: var(--tooltip-z-index);
 
     &__floating {
         position: absolute;
         padding: 8px 12px;
 
+        backdrop-filter: blur(var(--ui-blur-intensity));
         color: var(--ui-color-accent-color);
-        background: var(--ui-color-background-component);
         border-radius: 12px;
         @include shadow(bottom);
 
@@ -29,6 +30,17 @@
         opacity: 0;
         transition: all var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back),
         opacity var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+
+        @include transparency-background(var(--ui-color-background-component), var(--ui-background-opacity), 0);
+
+        &>* {
+            position: relative;
+            z-index: 1;
+        }
+
+        &::after {
+            border-radius: 12px;
+        }
     }
 
     $direction: (top, bottom, left, right);

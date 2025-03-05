@@ -1,3 +1,5 @@
+@use "../../assets/css/function" as *;
+
 .mde-button {
     --mde-button-background: transparent;
     --mde-button-padding: 8px;
@@ -31,15 +33,9 @@
         z-index: 1;
     }
 
-    &::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+    @include transparency-background(var(--mde-button-background), var(--ui-background-opacity), 0);
 
-        background: var(--mde-button-background);
+    &::after {
         border-radius: var(--mde-button-radius);
     }
 

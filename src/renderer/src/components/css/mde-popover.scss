@@ -1,0 +1,64 @@
+@use "sass:map";
+@use "../../assets/css/function" as *;
+
+.mde-popover {
+    --popover-distance: 8px;
+    --popover-z-index: 100;
+
+    position: relative;
+
+    height: fit-content;
+
+    &__floating {
+        position: absolute;
+
+        @include shadow(bottom);
+        background: var(--ui-color-background-component);
+        padding: 12px;
+        border-radius: 24px;
+        // TODO [TEST] Test data, used to test animations.
+        width: 400px;
+        height: 300px;
+
+        user-select: none;
+        z-index: var(--popover-z-index);
+
+        transform: scale(0);
+        transition: all var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+    }
+
+    &.active &__floating {
+        transform: scale(1);
+        transition: transform var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back);
+    }
+
+    $direction: (top, bottom, left, right);
+    $near-edge-map: (
+            X: (top, bottom, center),
+            Y: (left, right, center)
+    );
+
+    @each $dir in $direction {
+        $reverse-dir: reverse-direction($dir);
+        $axis: axis($dir);
+
+        @each $edge in map.get($near-edge-map, $axis) {
+            &[data-direction="#{$dir}"][data-near-edge="#{$edge}"] &__floating {
+                #{$reverse-dir}: calc(100% + var(--popover-distance));
+                transform-origin: if($axis == X, #{$reverse-dir} #{$edge}, #{$edge} #{$reverse-dir});
+
+                @if $edge != center {
+                    #{$edge}: 0;
+                }
+            }
+        }
+
+        &[data-direction="#{$dir}"][data-near-edge=center] &__floating {
+            @include transform-center($axis, scale(0));
+        }
+
+        &[data-direction="#{$dir}"][data-near-edge=center].active &__floating {
+            @include transform-center($axis, scale(1), false);
+        }
+    }
+}

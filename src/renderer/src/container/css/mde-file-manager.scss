@@ -1,13 +1,55 @@
+@use "../../assets/css/function" as *;
+
 #mde-file-manager {
     width: 100%;
     height: 100%;
 
     display: flex;
     flex-direction: column;
+    gap: 16px;
 
     padding: 12px;
 
     .mde-input {
         margin-top: 4px;
+    }
+
+    .workspace {
+        height: 48px;
+        border-radius: 16px;
+        padding: 12px;
+
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+
+        font-size: 1.125rem;
+        line-height: 1.5rem;
+        color: var(--ui-color-accent-color);
+
+        cursor: pointer;
+
+        p, svg {
+            z-index: 1;
+        }
+
+        p {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        svg {
+            @include force-lock-size(var(--size-svg-normal));
+        }
+
+        @include transparency-background(var(--ui-color-accent-color), 0.12, 0);
+
+        &::after {
+            border-radius: 16px;
+        }
     }
 }

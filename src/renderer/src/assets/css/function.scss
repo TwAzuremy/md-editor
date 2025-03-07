@@ -7,6 +7,10 @@ $direction-map: (
         right: left
 );
 
+$axis-center: (
+        x: (position: top, translate: Y),
+        y: (position: left, translate: X)
+);
 
 @function reverse-direction($direction) {
     @if not map.has-key($direction-map, $direction) {
@@ -16,7 +20,24 @@ $direction-map: (
     @return map.get($direction-map, $direction);
 }
 
-@mixin shadow($direction) {
+@function axis($direction) {
+    @if $direction == "top" or $direction == "bottom" {
+        @return "y";
+    }
+
+    @if $direction == "left" or $direction == "right" {
+        @return "x";
+    }
+}
+
+@mixin transform-center($axis) {
+    $config: map.get($axis-center, $axis);
+
+    #{map.get($config, position)}: 50%;
+    transform: translate#{map.get($config, translate)}(-50%);
+}
+
+@mixin shadow($direction: bottom) {
     @if not map.has-key($direction-map, $direction) {
         @error "Invalid direction `#{$direction}`. Expected one of: #{map-keys($direction-map)}";
     }

@@ -48,13 +48,8 @@
         &[data-direction="#{$dir}"] &__floating {
             #{reverse-direction($dir)}: calc(100% + var(--tooltip-hover-before-distance));
 
-            @if $dir == "top" or $dir == "bottom" {
-                left: 50%;
-                transform: translateX(-50%);
-            } @else if $dir == "left" or $dir == "right" {
-                top: 50%;
-                transform: translateY(-50%);
-            }
+            $axis: axis($dir);
+            @include transform-center($axis);
         }
     }
 

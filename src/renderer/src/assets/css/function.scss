@@ -8,11 +8,27 @@ $direction-map: (
 );
 
 $axis-center: (
-        x: (position: top, translate: Y),
-        y: (position: left, translate: X)
+        X: (position: top, translate: Y),
+        Y: (position: left, translate: X)
 );
 
+/// Reverses a direction.
+///
+/// @param $direction - The direction to reverse.
+///
+/// @return - The reversed direction.
+///
+/// @example
+/// reverse-direction(top) => bottom
+/// reverse-direction(left) => right
+/// reverse-direction(center) => center
+///
+/// @error - Invalid direction `$direction`. Expected one of: #{map-keys($direction-map)}
 @function reverse-direction($direction) {
+    @if $direction == center {
+        @return center;
+    }
+
     @if not map.has-key($direction-map, $direction) {
         @error "Invalid direction `#{$direction}`. Expected one of: #{map-keys($direction-map)}";
     }
@@ -20,21 +36,32 @@ $axis-center: (
     @return map.get($direction-map, $direction);
 }
 
+/// Gets the axis of a direction.
+///
+/// @param $direction - The direction to get the axis from.
+///
+/// @return - The axis of the direction.
+///
+/// @example
+/// axis(top) => Y
+/// axis(left) => X
 @function axis($direction) {
     @if $direction == "top" or $direction == "bottom" {
-        @return "y";
+        @return Y;
     }
 
     @if $direction == "left" or $direction == "right" {
-        @return "x";
+        @return X;
     }
 }
 
-@mixin transform-center($axis) {
+@mixin transform-center($axis, $transform-attributes: null, $need-direction: true) {
     $config: map.get($axis-center, $axis);
 
-    #{map.get($config, position)}: 50%;
-    transform: translate#{map.get($config, translate)}(-50%);
+    @if $need-direction {
+        #{map.get($config, position)}: 50%;
+    }
+    transform: translate#{map.get($config, translate)}(-50%) $transform-attributes;
 }
 
 @mixin shadow($direction: bottom) {

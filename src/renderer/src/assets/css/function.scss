@@ -107,3 +107,21 @@ $axis-center: (
     height: $size;
     max-height: $size;
 }
+
+@mixin scroll-bar() {
+    --scrollbar-depth: 4px;
+
+    &::-webkit-scrollbar {
+        width: var(--scrollbar-depth);
+        height: var(--scrollbar-depth);
+    }
+
+    &::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: var(--ui-color-accent-color);
+        border-radius: calc(var(--scrollbar-depth) / 2);
+    }
+}

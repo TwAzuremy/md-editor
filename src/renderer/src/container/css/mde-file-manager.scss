@@ -52,4 +52,95 @@
             border-radius: 16px;
         }
     }
+
+    .workspace__recent {
+        --title-content-spacing: 8px;
+        --plate-spacing: 16px;
+
+        display: flex;
+        flex-direction: column;
+
+        max-height: calc(var(--mde-popover-max-height) - 2 * var(--mde-popover-padding));
+
+        &__title {
+            font-size: 1rem;
+            color: var(--ui-color-text-regular);
+            margin-bottom: var(--title-content-spacing);
+            padding: 0 var(--mde-popover-padding);
+        }
+
+        & > .mde-button {
+            --mde-button-background: var(--ui-color-accent-color);
+            --mde-button-color: var(--ui-color-accent-color);
+            --mde-button-hover-color: var(--ui-color-accent-color);
+
+            margin: 0 var(--mde-popover-padding) var(--plate-spacing);
+        }
+
+        &__list {
+            flex: 1;
+
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+
+            @include scroll-bar();
+
+            padding: 0 calc(var(--mde-popover-padding) - var(--scrollbar-depth)) 0 var(--mde-popover-padding);
+            overflow-y: scroll;
+        }
+
+        .mde-button {
+            --mde-button-padding: 8px 12px;
+            --ui-background-opacity: 0.12;
+            --mde-button-hover-amplitude: 1.02;
+            --mde-button-active-amplitude: 0.99;
+
+            &__text {
+                flex: 1;
+                width: calc(100% - var(--mde-button-element-spacing) - var(--mde-button-svg-size));
+
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+                justify-content: flex-start;
+                gap: 4px;
+
+                .workspace__name,
+                .workspace__path {
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+
+                    text-align: left;
+                    width: 100%;
+                }
+
+                .workspace__name {
+                    font-size: 0.875rem;
+                    line-height: 1.25rem;
+                }
+
+                .workspace__path {
+                    font-size: 0.75rem;
+                    line-height: 0.75rem;
+                    color: var(--ui-color-text-sec-text);
+                }
+            }
+
+            &:hover {
+                --mde-button-background: var(--ui-color-accent-color);
+            }
+
+            &.mde-button__elasticity {
+                &:hover {
+                    transform: scaleX(var(--mde-button-hover-amplitude));
+                }
+
+                &:active {
+                    transform: scaleX(var(--mde-button-active-amplitude));
+                }
+            }
+        }
+    }
 }

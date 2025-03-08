@@ -2,8 +2,11 @@
 @use "../../assets/css/function" as *;
 
 .mde-popover {
-    --popover-distance: 8px;
-    --popover-z-index: 100;
+    --mde-popover-distance: 8px;
+    --mde-popover-padding: 12px;
+    --mde-popover-min-width: 300px;
+    --mde-popover-max-height: 338px;
+    --mde-popover-z-index: 100;
 
     position: relative;
 
@@ -14,14 +17,13 @@
 
         @include shadow(bottom);
         background: var(--ui-color-background-component);
-        padding: 12px;
+        padding: var(--mde-popover-padding) 0;
         border-radius: 24px;
-        // TODO [TEST] Test data, used to test animations.
-        width: 400px;
-        height: 300px;
+        min-width: var(--mde-popover-min-width);
+        max-height: var(--mde-popover-max-height);
 
         user-select: none;
-        z-index: var(--popover-z-index);
+        z-index: var(--mde-popover-z-index);
 
         transform: scale(0);
         transition: all var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
@@ -44,7 +46,7 @@
 
         @each $edge in map.get($near-edge-map, $axis) {
             &[data-direction="#{$dir}"][data-near-edge="#{$edge}"] &__floating {
-                #{$reverse-dir}: calc(100% + var(--popover-distance));
+                #{$reverse-dir}: calc(100% + var(--mde-popover-distance));
                 transform-origin: if($axis == X, #{$reverse-dir} #{$edge}, #{$edge} #{$reverse-dir});
 
                 @if $edge != center {

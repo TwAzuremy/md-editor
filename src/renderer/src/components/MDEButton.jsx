@@ -8,7 +8,7 @@ import React from "react";
  * @function MDEButton
  *
  * @param {ReactElement} icon The icon to be displayed.
- * @param {string} text The text to be displayed.
+ * @param {string|ReactElement} text The text to be displayed.
  * @param {string} iconPosition="prefix" The position of the icon relative to the text.
  * @param {boolean} isElasticity=true Whether the button should have an elastic effect.
  * @param {boolean} active=false If the button is active.

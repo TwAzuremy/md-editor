@@ -1,5 +1,5 @@
-import { contextBridge, ipcRenderer } from "electron";
-import { electronAPI } from "@electron-toolkit/preload";
+import {contextBridge, ipcRenderer} from "electron";
+import {electronAPI} from "@electron-toolkit/preload";
 import {logger} from "../utils/Logger.js";
 
 // Custom APIs for renderer
@@ -16,7 +16,11 @@ if (process.contextIsolated) {
         contextBridge.exposeInMainWorld("windowControls", {
             send: (msg) => ipcRenderer.send(msg),
             onMaximize: (callback) => ipcRenderer.on("maximize", (_, isMaximized) => callback(isMaximized)),
-            isMaximized: () => ipcRenderer.invoke('window-is-maximized')
+            isMaximized: () => ipcRenderer.invoke("window-is-maximized")
+        });
+
+        contextBridge.exposeInMainWorld("explorer", {
+            readDirectory: (dirPath, showHiddenFiles = false) => ipcRenderer.invoke("read-directory", dirPath, showHiddenFiles)
         });
     } catch (error) {
         logger.error("Failed to expose Electron API in the renderer process: ", error);
@@ -25,4 +29,5 @@ if (process.contextIsolated) {
     window.electron = electronAPI;
     window.api = api;
     window.windowControls = {};
+    window.explorer = {};
 }

@@ -1,11 +1,13 @@
 // noinspection JSIgnoredPromiseFromCall
 
-import {app, shell, BrowserWindow, ipcMain, screen} from "electron";
-import path, {join} from "path";
-import {promises as fs} from "fs";
+import {app, BrowserWindow, ipcMain, screen, shell} from "electron";
+import {join} from "path";
 import Store from "electron-store";
-import {electronApp, optimizer, is} from "@electron-toolkit/utils";
+import {electronApp, is, optimizer} from "@electron-toolkit/utils";
 import icon from "../../resources/icons/icon.png?asset";
+import * as path from "node:path";
+
+const fs = require("fs");
 
 let mainWindow;
 const store = new Store();
@@ -82,7 +84,7 @@ function createWindow() {
         mainWindow.webContents.send("maximize", false);
     });
 
-    ipcMain.handle('window-is-maximized', () => {
+    ipcMain.handle("window-is-maximized", () => {
         return mainWindow.isMaximized();
     });
 
@@ -93,6 +95,26 @@ function createWindow() {
     // Save window bounds
     mainWindow.on("resize", saveWindowBounds);
     mainWindow.on("move", saveWindowBounds);
+
+    ipcMain.handle("read-directory", (_, dirPath, showHiddenFiles = false) => {
+        try {
+            const directs = fs.readdirSync(dirPath, {withFileTypes: true});
+
+            return directs
+                .filter(dirent => {
+                    const isDirOrFile = dirent.isDirectory() || dirent.isFile();
+                    if (!isDirOrFile) return false;
+
+                    return showHiddenFiles || !checkFileIsHidden(dirPath, dirent.name);
+                })
+                .map(dirent => ({
+                    name: dirent.name,
+                    type: dirent.isDirectory() ? "directory" : "file"
+                }));
+        } catch (error) {
+            throw new Error(`Directory read failed: ${error.message}`);
+        }
+    });
 }
 
 /**
@@ -151,40 +173,40 @@ app.on("window-all-closed", () => {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-// Gets the structure of the folder
-async function readDirectory(dirPath) {
-    const result = [];
-    const queue = [{path: dirPath, children: result}];
-
-    while (queue.length > 0) {
-        const {path: currentDir, children} = queue.shift();
-
-        try {
-            const files = await fs.readdir(currentDir);
-
-            for (const file of files) {
-                const fullPath = path.join(currentDir, file);
-                const stats = await fs.stat(fullPath);
-
-                if (stats.isDirectory()) {
-                    const folderData = {
-                        name: file,
-                        children: []
-                    };
-                    children.push(folderData);
-                    queue.push({path: fullPath, children: folderData.children});
-                } else {
-                    children.push({name: file});
-                }
-            }
-        } catch (err) {
-            console.error("Read directory failed: ", err);
-        }
+/**
+ * Checks if a file is hidden.
+ *
+ * This function determines whether a given file is hidden based on the operating system platform.
+ * - On Unix-like systems (e.g., macOS or Linux), files starting with a dot (.) are considered hidden.
+ * - On Windows, the `fswin` module is used to check the file attributes to determine if it is hidden.
+ *
+ * @function checkFileIsHidden
+ *
+ * @param {string} dirPath - The directory path where the file is located.
+ * @param {string} filename - The name of the file to check.
+ *
+ * @returns {boolean} Returns `true` if the file is hidden, otherwise `false`.
+ *
+ * @throws {Error} If reading file attributes fails on Windows, an error will be thrown.
+ *
+ * @example
+ * // Example for Unix-like systems
+ * console.log(checkFileIsHidden('/path/to/directory', '.hiddenFile'));  // true
+ * console.log(checkFileIsHidden('/path/to/directory', 'visibleFile'));  // false
+ *
+ * @example
+ * // Example for Windows systems
+ * console.log(checkFileIsHidden('C:\\path\\to\\directory', 'hiddenFile.txt'));
+ */
+function checkFileIsHidden(dirPath, filename) {
+    // Unix
+    if (process.platform !== "win32") {
+        return /(^|\/)\.[^\/.]/g.test(filename);
     }
 
-    return result;
-}
+    // Windows
+    const fswin = require("fswin");
+    const attributes = fswin.getAttributesSync(path.join(dirPath, filename));
 
-// const testDir = await readDirectory("D:\\PSA\\HTML\\cssAnimation");
-//
-// console.log(JSON.stringify(testDir, null, 2));
+    return attributes.IS_HIDDEN;
+}

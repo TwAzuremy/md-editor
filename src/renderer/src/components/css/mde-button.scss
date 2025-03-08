@@ -9,10 +9,14 @@
     --mde-button-element-spacing: 8px;
     --mde-button-color: var(--ui-color-unchecked);
     --mde-button-hover-color: var(--ui-color-checked);
+    --mde-button-hover-amplitude: 1.05;
+    --mde-button-active-amplitude: 0.95;
 
     outline: none;
     border: none;
     background: transparent;
+
+    font-family: var(--ui-font-family), sans-serif;
 
     position: relative;
     padding: var(--mde-button-padding);
@@ -37,6 +41,8 @@
 
     &::after {
         border-radius: var(--mde-button-radius);
+
+        transition: background var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
     }
 
     &__icon {
@@ -63,11 +69,11 @@
 
     &.mde-button__elasticity {
         &:hover {
-            transform: scale(1.05);
+            transform: scale(var(--mde-button-hover-amplitude));
         }
 
         &:active {
-            transform: scale(0.95);
+            transform: scale(var(--mde-button-active-amplitude));
         }
     }
 }

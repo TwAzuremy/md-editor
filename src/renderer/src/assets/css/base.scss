@@ -15,6 +15,8 @@
 }
 
 :root {
+    --ui-font-family: "Poppins", "SourceHanSans", -apple-system;
+
     --ui-color-accent-color: #4091FF;
     --ui-color-background: linear-gradient(to bottom right, #F0F5FF 25%, #D9E8FF 100%);
     --ui-color-background-component: #FFFFFF;
@@ -25,6 +27,8 @@
     --ui-color-close: #F56C6C;
 
     --ui-color-text-primary: #2B2E2F;
+    --ui-color-text-regular: #606266;
+    --ui-color-text-sec-text: #A2A8B3;
     --ui-color-text-placeholder: #A2A8B3;
 
     --ui-color-window-controller-default: var(--ui-color-unchecked);
@@ -71,7 +75,7 @@ html {
 body {
     background: var(--ui-color-background);
     min-height: 100vh;
-    font-family: "Poppins", "SourceHanSans", -apple-system, sans-serif;
+    font-family: var(--ui-font-family), sans-serif;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -110,7 +110,24 @@ function createWindow() {
                 .map(dirent => ({
                     name: dirent.name,
                     type: dirent.isDirectory() ? "directory" : "file"
-                }));
+                }))
+                .sort((a, b) => {
+                    // Sort by type: folders first
+                    if (a.type !== b.type) {
+                        return a.type === "directory" ? -1 : 1;
+                    }
+
+                    // If the type is the same, sort by name
+                    return a.name.localeCompare(
+                        b.name,
+                        void 0,
+                        // Turn on natural sorting of numbers, regardless of case sensitivity
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    );
+                });
         } catch (error) {
             throw new Error(`Directory read failed: ${error.message}`);
         }

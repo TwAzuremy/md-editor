@@ -1,0 +1,48 @@
+.mde-file {
+    --mde-file-twigs-spacing: 4px;
+
+    position: relative;
+
+    .mde-button {
+        --mde-button-color: var(--ui-color-text-primary);
+        --mde-button-hover-color: var(--ui-color-background-file);
+        --mde-button-hover-amplitude: 1.02;
+        --mde-button-active-amplitude: 0.99;
+
+        &__text {
+            white-space: nowrap;
+        }
+
+        &:hover {
+            --mde-button-background: var(--ui-color-background-file);
+        }
+    }
+
+    &:has(+&, +.mde-folder) {
+        > .trunk {
+            display: block;
+        }
+    }
+
+    .twig {
+        width: var(--size-svg-normal);
+        height: var(--size-svg-normal);
+        color: var(--ui-color-twigs);
+
+        position: absolute;
+        top: 0;
+        right: calc(100% + var(--mde-file-twigs-spacing));
+    }
+
+    .trunk {
+        display: none;
+
+        position: absolute;
+        top: var(--mde-explorer-tweaks-trunk-top);
+        right: calc(100% + var(--size-svg-normal) + var(--mde-folder-twigs-spacing) - var(--mde-explorer-tweaks-trunk-right));
+        width: var(--mde-explorer-tweaks-trunk-width);
+        background: var(--ui-color-twigs);
+        height: calc(100% + var(--mde-folder-spacing));
+        border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
+    }
+}

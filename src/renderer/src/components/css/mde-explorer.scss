@@ -1,0 +1,22 @@
+@use "../../assets/css/function" as *;
+
+.mde-explorer {
+    --mde-explorer-tweaks-trunk-top: 3px;
+    --mde-explorer-tweaks-trunk-right: 5px;
+    --mde-explorer-tweaks-trunk-width: 2px;
+
+    flex: 1;
+    width: 100%;
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    overflow: scroll;
+    @include scroll-bar(true);
+
+    .mde-button {
+        width: fit-content;
+    }
+}

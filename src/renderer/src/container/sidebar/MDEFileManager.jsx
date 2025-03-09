@@ -5,32 +5,57 @@ import IconLoader from "@components/IconLoader.jsx";
 import MDEPopover from "@components/MDEPopover.jsx";
 import MDEButton from "@components/MDEButton.jsx";
 import {useState} from "react";
+import MDEExplorer from "@components/MDEExplorer.jsx";
 
-// TODO: [TEST] Simulate the data of the workspace.
-const current = {
+/**
+ * Use this when you don't have a workspace
+ *
+ * @type {{name: string, path: string|null}}
+ */
+const NO_WORKSPACE = {
     name: "No open workspace",
-    path: "The workspace was not found"
+    path: null
 };
 
+// TODO: [TEST] Simulate the data of the workspace.
 const recent = [
     {
+        name: "HTML Projects",
+        path: "D:\\PSA\\HTML"
+    },
+    {
+        name: "Kotlin Projects",
+        path: "D:\\PSA\\Kotlin"
+    },
+    {
         name: "Notes",
-        path: "D:\\markdown-editor\\notes"
+        path: "D:\\Typora\\Notes"
     },
     {
-        name: "Information",
-        path: "D:\\markdown-editor\\information"
-    },
-    {
-        name: "Class Notes",
-        path: "D:\\class-notes"
+        name: "Not Exist",
+        path: "D:\\ThePathIsNotExist"
     }
 ];
 
 function MDEFileManager() {
-    const [currentWorkspace, setCurrentWorkspace] = useState(current);
+    const [currentWorkspace, setCurrentWorkspace] = useState(NO_WORKSPACE);
 
-    function switchWorkspace(workspace) {
+    async function switchWorkspace(workspace) {
+        const isExits = await window.explorer.checkPathExists(workspace.path);
+
+        if (isExits) {
+            setCurrentWorkspace(workspace);
+        }
+    }
+
+    async function openDirectoryDialog() {
+        const workspace = await window.explorer.openDirectoryDialog();
+
+        // After clicking Cancel, the return value is "undefined"
+        if (!workspace) {
+            return;
+        }
+
         setCurrentWorkspace(workspace);
     }
 
@@ -47,12 +72,17 @@ function MDEFileManager() {
                 </div>
                 <div className={"workspace__recent"} slot={"floating"}>
                     <h5 className={"workspace__recent__title"}>Current</h5>
-                    <MDEButton text={
-                        <>
-                            <span className={"workspace__name"}>{currentWorkspace.name}</span>
-                            <span className={"workspace__path"}>{currentWorkspace.path}</span>
-                        </>
-                    } isElasticity={false}/>
+                    <MDEButton
+                        text={
+                            <>
+                                <span className={"workspace__name"}>{currentWorkspace.name}</span>
+                                <span className={"workspace__path"}>
+                                    {currentWorkspace.path || "Click to open the folder"}
+                                </span>
+                            </>
+                        }
+                        isElasticity={false}
+                        onClick={openDirectoryDialog}/>
                     <h5 className={"workspace__recent__title"}>Recent</h5>
                     <div className={"workspace__recent__list"}>
                         {
@@ -78,6 +108,7 @@ function MDEFileManager() {
                     </div>
                 </div>
             </MDEPopover>
+            <MDEExplorer dirPath={currentWorkspace?.path}/>
         </div>
     );
 }

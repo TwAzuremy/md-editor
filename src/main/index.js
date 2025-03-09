@@ -1,6 +1,6 @@
 // noinspection JSIgnoredPromiseFromCall
 
-import {app, BrowserWindow, ipcMain, screen, shell} from "electron";
+import {app, BrowserWindow, ipcMain, screen, shell, dialog} from "electron";
 import {join} from "path";
 import Store from "electron-store";
 import {electronApp, is, optimizer} from "@electron-toolkit/utils";
@@ -96,7 +96,15 @@ function createWindow() {
     mainWindow.on("resize", saveWindowBounds);
     mainWindow.on("move", saveWindowBounds);
 
-    ipcMain.handle("read-directory", (_, dirPath, showHiddenFiles = false) => {
+    ipcMain.handle("check-path-exists", (_, dirPath) => {
+        try {
+            return fs.existsSync(dirPath);
+        } catch (error) {
+            return false;
+        }
+    });
+
+    ipcMain.handle("read-directory", async (_, dirPath, showHiddenFiles = false) => {
         try {
             const directs = fs.readdirSync(dirPath, {withFileTypes: true});
 
@@ -129,7 +137,22 @@ function createWindow() {
                     );
                 });
         } catch (error) {
-            throw new Error(`Directory read failed: ${error.message}`);
+            return null;
+        }
+    });
+
+    ipcMain.handle("open-directory-dialog", async () => {
+        const result = await dialog.showOpenDialog({
+            properties: ["openDirectory"]
+        });
+
+        if (!result.canceled && result.filePaths.length > 0) {
+            const fullPath = result.filePaths[0];
+
+            return {
+                path: fullPath,
+                name: path.basename(fullPath)
+            };
         }
     });
 }
@@ -223,7 +246,7 @@ function checkFileIsHidden(dirPath, filename) {
 
     // Windows
     const fswin = require("fswin");
-    const attributes = fswin.getAttributesSync(path.join(dirPath, filename));
+    const attributes = fswin.getAttributesSync(join(dirPath, filename));
 
     return attributes.IS_HIDDEN;
 }

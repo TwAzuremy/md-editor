@@ -1,15 +1,22 @@
 import "@components/css/mde-explorer.scss";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useCallback, memo} from "react";
 import MDEFolder from "@components/MDEFolder.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 
-function MDEExplorer({dirPath = null}) {
+/**
+ * The file browser component is used to display the contents of the directory
+ * 
+ * @param {Object} props component attributes
+ * @param {string|null} props.dirPath directory path
+ * @returns {React.ReactElement} renderer element
+ */
+const MDEExplorer = memo(function MDEExplorer({dirPath = null}) {
     const [fileList, setFileList] = useState([]);
 
-    async function readDirectory(dirPath) {
-        return await window.explorer.readDirectory(dirPath, false);
-    }
+    const readDirectory = useCallback(async (path) => {
+        return await window.explorer.readDirectory(path, false);
+    }, []);
 
     useEffect(() => {
         if (!dirPath) {
@@ -17,9 +24,9 @@ function MDEExplorer({dirPath = null}) {
         }
 
         readDirectory(dirPath).then(list => setFileList(list || []));
-    }, [dirPath]);
+    }, [dirPath, readDirectory]);
 
-    function renderFileItem(file, index) {
+    const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;
         const commonProps = {
             dirPath,
@@ -32,13 +39,14 @@ function MDEExplorer({dirPath = null}) {
         } else if (file.type === "file") {
             return <MDEFile key={key} {...commonProps}/>;
         }
-    }
+        return null;
+    }, [dirPath]);
 
     return (
-        <div className={"mde-explorer"}>
+        <div className="mde-explorer">
             {fileList.map((file, index) => renderFileItem(file, index))}
         </div>
     );
-}
+});
 
 export default MDEExplorer;

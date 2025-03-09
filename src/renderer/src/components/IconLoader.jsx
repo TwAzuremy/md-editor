@@ -1,5 +1,6 @@
-import React, {lazy, memo, Suspense} from "react";
+import React, {lazy, memo, Suspense, useMemo} from "react";
 
+// 使用全局缓存以避免重复导入
 const iconCache = {};
 
 /**
@@ -16,14 +17,16 @@ const iconCache = {};
  * <IconLoader name={"icon-name"}/>
  */
 const IconLoader = memo(({name, ...props}) => {
-    // Get the icon component from the cache.
-    let Icon = iconCache[name];
+    const Icon = useMemo(() => {
 
-    // If not, the icon is imported, and stored in the cache.
-    if (!Icon) {
-        Icon = lazy(() => import(`@assets/icons/${name}.svg?react`));
-        iconCache[name] = Icon;
-    }
+        if (iconCache[name]) {
+            return iconCache[name];
+        }
+        
+        const ImportedIcon = lazy(() => import(`@assets/icons/${name}.svg?react`));
+        iconCache[name] = ImportedIcon;
+        return ImportedIcon;
+    }, [name]); // Recalculate only when name changes
 
     return (
         <Suspense fallback={null}>

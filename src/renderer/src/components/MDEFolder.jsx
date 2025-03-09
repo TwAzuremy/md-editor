@@ -1,16 +1,25 @@
 import "@components/css/mde-folder.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
-import {useRef, useState} from "react";
+import {useRef, useState, useCallback, memo} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 
-function MDEFolder({dirPath, name, showTwigs = true, ...props}) {
+/**
+ * folder component, used to display a folder and its contents
+ * 
+ * @param {Object} props component properties
+ * @param {string} props.dirPath path to folder
+ * @param {string} props.name folder name
+ * @param {boolean} [props.showTwigs=true] is show the twigs or not
+ * @returns {React.ReactElement} rendered element
+ */
+const MDEFolder = memo(function MDEFolder({ dirPath, name, showTwigs = true, ...props }) {
     const [fileList, setFileList] = useState([]);
 
     const folderEl = useRef(null);
 
-    async function openAndCloseFolder() {
+    const openAndCloseFolder = useCallback(async () => {
         if (fileList.length) {
             setFileList([]);
             morph(false);
@@ -24,9 +33,9 @@ function MDEFolder({dirPath, name, showTwigs = true, ...props}) {
 
         setFileList(list);
         morph(true);
-    }
+    }, [dirPath, name, fileList.length]);
 
-    function renderFileItem(file, index) {
+    const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;
         const commonProps = {
             dirPath: dirPath + "\\" + name,
@@ -34,11 +43,12 @@ function MDEFolder({dirPath, name, showTwigs = true, ...props}) {
         };
 
         if (file.type === "directory") {
-            return <MDEFolder key={key} {...commonProps}/>;
+            return <MDEFolder key={key} {...commonProps} />;
         } else if (file.type === "file") {
-            return <MDEFile key={key} {...commonProps}/>;
+            return <MDEFile key={key} {...commonProps} />;
         }
-    }
+        return null;
+    }, [dirPath, name]);
 
     /**
      * Morphs the folder icon.
@@ -60,9 +70,9 @@ function MDEFolder({dirPath, name, showTwigs = true, ...props}) {
 
     return (
         <div className={"mde-folder"} {...props} ref={folderEl}>
-            {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
+            {showTwigs && <IconLoader name={"twig"} className={"twig"} />}
             {showTwigs && <div className={"trunk"}></div>}
-            <MDEButton icon={<IconLoader name={"folder"}/>} text={name} onClick={openAndCloseFolder}/>
+            <MDEButton icon={<IconLoader name={"folder"} />} text={name} onClick={openAndCloseFolder} />
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>
@@ -71,6 +81,6 @@ function MDEFolder({dirPath, name, showTwigs = true, ...props}) {
             }
         </div>
     );
-}
+});
 
 export default MDEFolder;

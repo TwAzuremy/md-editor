@@ -1,6 +1,6 @@
 import "@components/css/mde-button.scss";
 
-import React from "react";
+import React, { memo } from "react";
 
 /**
  * A button component with an icon and text.
@@ -17,27 +17,32 @@ import React from "react";
  * @returns {ReactElement}
  *
  * @example
- * <MDEButton icon={<IconLoader="icon"/>} text={"Text"} name={"Icon-Text Button"}/>
+ * <MDEButton icon={<IconLoader name="icon"/>} text={"Text"} name={"Icon-Text Button"}/>
  */
-function MDEButton({
-                       icon,
-                       text,
-                       iconPosition = "prefix",
-                       isElasticity = true,
-                       active = false,
-                       ...props
-                   }) {
+const MDEButton = memo(function MDEButton({
+    icon,
+    text,
+    iconPosition = "prefix",
+    isElasticity = true,
+    active = false,
+    className,
+    ...props
+}) {
+    // Change the class name construction to increase readability
+    const buttonClassName = [
+        "mde-button",
+        className,
+        isElasticity ? "mde-button__elasticity" : "",
+        active ? "active" : ""
+    ].filter(Boolean).join(" ");
+    
     return (
-        <button {...props}
-                className={"mde-button" +
-                    (props.className ? ` ${props.className}` : "") +
-                    (isElasticity ? " mde-button__elasticity" : "") +
-                    (active ? " active" : "")}>
-            {(icon && iconPosition === "prefix") && <span className={"mde-button__icon"}>{icon}</span>}
-            {text && <span className={"mde-button__text"}>{text}</span>}
-            {(icon && iconPosition === "suffix") && <span className={"mde-button__icon"}>{icon}</span>}
+        <button {...props} className={buttonClassName}>
+            {(icon && iconPosition === "prefix") && <span className="mde-button__icon">{icon}</span>}
+            {text && <span className="mde-button__text">{text}</span>}
+            {(icon && iconPosition === "suffix") && <span className="mde-button__icon">{icon}</span>}
         </button>
     );
-}
+});
 
 export default MDEButton;

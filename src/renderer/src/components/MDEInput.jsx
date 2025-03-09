@@ -2,28 +2,37 @@ import "@components/css/mde-input.scss";
 
 import IconLoader from "@components/IconLoader.jsx";
 import MDEButton from "@components/MDEButton.jsx";
-import {useRef} from "react";
+import {useRef, useCallback, memo} from "react";
 
-function MDEInput({
-                      icon,
-                      ...props
-                  }) {
+/**
+ * Input Component
+ * 
+ * @param {Object} props component properties
+ * @param {React.ReactElement} [props.icon] input icon
+ * @returns {React.ReactElement} rendered element
+ */
+const MDEInput = memo(function MDEInput({
+    icon,
+    ...props
+}) {
     const inputEl = useRef(null);
 
-    function clear() {
-        inputEl.current.value = "";
-        inputEl.current.focus();
-    }
+    const clear = useCallback(() => {
+        if (inputEl.current) {
+            inputEl.current.value = "";
+            inputEl.current.focus();
+        }
+    }, []);
 
     return (
-        <div className={"mde-input"}>
-            {icon && <div className={"mde-input__icon"}>{icon}</div>}
-            <input className={"mde-input__input"} {...props} ref={inputEl}/>
-            <MDEButton className={"mde-input__clear"}
-                       icon={<IconLoader name={"close"}/>}
-                       onClick={clear}/>
+        <div className="mde-input">
+            {icon && <div className="mde-input__icon">{icon}</div>}
+            <input className="mde-input__input" {...props} ref={inputEl}/>
+            <MDEButton className="mde-input__clear"
+                    icon={<IconLoader name="close"/>}
+                    onClick={clear}/>
         </div>
     );
-}
+});
 
 export default MDEInput;

@@ -1,16 +1,17 @@
 @use "../../assets/css/function" as *;
 
 .mde-tooltip {
-    --tooltip-distance: 8px;
-    --tooltip-hover-before-distance: 0px;
-    --tooltip-z-index: 100;
+    --mde-tooltip-distance: 8px;
+    --mde-tooltip-hover-before-distance: 0px;
+    --mde-tooltip-z-index: 100;
+    --mde-tooltip-background-opacity: 0.75;
 
     position: relative;
 
     width: fit-content;
     height: fit-content;
 
-    z-index: var(--tooltip-z-index);
+    z-index: var(--mde-tooltip-z-index);
 
     &__floating {
         position: absolute;
@@ -31,7 +32,7 @@
         transition: all var(--animation-delay-normal) var(--cubic-bezier-elasticity-on-back),
         opacity var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
 
-        @include transparency-background(var(--ui-color-background-component), var(--ui-background-opacity), 0);
+        @include transparency-background(var(--ui-color-background-component), var(--mde-tooltip-background-opacity), 0);
 
         &>* {
             position: relative;
@@ -46,7 +47,7 @@
     $direction: (top, bottom, left, right);
     @each $dir in $direction {
         &[data-direction="#{$dir}"] &__floating {
-            #{reverse-direction($dir)}: calc(100% + var(--tooltip-hover-before-distance));
+            #{reverse-direction($dir)}: calc(100% + var(--mde-tooltip-hover-before-distance));
 
             $axis: axis($dir);
             @include transform-center($axis);
@@ -55,7 +56,7 @@
 
     &:hover {
         .mde-tooltip__floating {
-            --tooltip-hover-before-distance: var(--tooltip-distance);
+            --mde-tooltip-hover-before-distance: var(--mde-tooltip-distance);
 
             opacity: 1;
         }

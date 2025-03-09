@@ -1,6 +1,9 @@
 #mde-sidebar {
+    --sidebar-padding: 12px;
+
     grid-area: 1 / 2 / 3 / 3;
     width: var(--layout-width-sidebar-default);
+    height: 100vh;
 
     z-index: 1;
 }

@@ -108,7 +108,7 @@ $axis-center: (
     max-height: $size;
 }
 
-@mixin scroll-bar() {
+@mixin scroll-bar($hiddenHorizontal: false) {
     --scrollbar-depth: 4px;
 
     &::-webkit-scrollbar {
@@ -123,5 +123,19 @@ $axis-center: (
     &::-webkit-scrollbar-thumb {
         background: var(--ui-color-accent-color);
         border-radius: calc(var(--scrollbar-depth) / 2);
+    }
+
+    &::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    @if $hiddenHorizontal {
+        &::-webkit-scrollbar-thumb:horizontal {
+            visibility: hidden;
+        }
+
+        &:hover::-webkit-scrollbar-thumb:horizontal {
+            visibility: visible;
+        }
     }
 }

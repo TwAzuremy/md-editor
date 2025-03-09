@@ -22,6 +22,9 @@
     --ui-color-background-component: #FFFFFF;
     --ui-color-background-input: rgba(162, 168, 179, 0.12);
 
+    --ui-color-background-folder: #FF9800;
+    --ui-color-background-file: #4DA6FF;
+
     --ui-color-unchecked: #B5BECC;
     --ui-color-checked: var(--ui-color-accent-color);
     --ui-color-close: #F56C6C;
@@ -31,6 +34,8 @@
     --ui-color-text-sec-text: #A2A8B3;
     --ui-color-text-placeholder: #A2A8B3;
 
+    --ui-color-twigs: #DDE2EC;
+
     --ui-color-window-controller-default: var(--ui-color-unchecked);
     --ui-color-window-controller-hover: var(--ui-color-accent-color);
     --ui-color-window-controller-close-hover: #F56C6C;
@@ -39,7 +44,7 @@
 
     --ui-blur-intensity: 4px;
 
-    --ui-background-opacity: 0.8;
+    --ui-background-opacity: 0.12;
 
     --layout-height-header: 52px;
     --layout-width-side-nav-bar: 64px;

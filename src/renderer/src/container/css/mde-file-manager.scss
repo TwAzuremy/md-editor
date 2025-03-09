@@ -8,16 +8,15 @@
     flex-direction: column;
     gap: 16px;
 
-    padding: 12px;
-
     .mde-input {
-        margin-top: 4px;
+        margin: calc(var(--sidebar-padding) + 4px) var(--sidebar-padding) 0;
     }
 
     .workspace {
         height: 48px;
         border-radius: 16px;
         padding: 12px;
+        margin: 0 var(--sidebar-padding);
 
         position: relative;
         display: flex;
@@ -92,7 +91,6 @@
 
         .mde-button {
             --mde-button-padding: 8px 12px;
-            --ui-background-opacity: 0.12;
             --mde-button-hover-amplitude: 1.02;
             --mde-button-active-amplitude: 0.99;
 
@@ -142,5 +140,9 @@
                 }
             }
         }
+    }
+
+    .mde-explorer {
+        padding: 0 calc(var(--sidebar-padding) - var(--scrollbar-depth)) var(--sidebar-padding) var(--sidebar-padding);
     }
 }

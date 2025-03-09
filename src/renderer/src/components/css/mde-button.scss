@@ -52,6 +52,10 @@
         svg {
             width: var(--mde-button-svg-size);
             height: var(--mde-button-svg-size);
+
+            path {
+                transition: d var(--animation-delay-normal) var(--cubic-bezier-ease-in-out);
+            }
         }
     }
 

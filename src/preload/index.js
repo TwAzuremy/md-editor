@@ -34,14 +34,14 @@ if (process.contextIsolated) {
             /**
              * Check if a directory exists.
              *
-             * @param {string} dirPath
+             * @param {string|null} dirPath
              * @returns {Promise<boolean>}
              */
-            checkPathExists: (dirPath) => ipcRenderer.invoke('check-path-exists', dirPath),
+            checkPathExists: (dirPath) => ipcRenderer.invoke("check-path-exists", dirPath),
             /**
              * Read a directory.
              *
-             * @param {string} dirPath
+             * @param {string|null} dirPath
              * @param {boolean} showHiddenFiles
              * @returns {Promise<[{name: string, type: string}]>}
              */
@@ -51,7 +51,22 @@ if (process.contextIsolated) {
              *
              * @returns {Promise<{path: string, name: string}>}
              */
-            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog")
+            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),
+            /**
+             * Open a directory in the system's file explorer.
+             *
+             * @param {string|null} dirPath - Path to the directory to open.
+             * @returns {Promise<boolean>}
+             */
+            openInSystemExplorer: (dirPath) => ipcRenderer.invoke("open-in-system-explorer", dirPath)
+        });
+
+        // noinspection JSUnresolvedReference
+        contextBridge.exposeInMainWorld("store", {
+            get: (key) => ipcRenderer.invoke("electron-store", "get", key, null),
+            set: (key, value) => ipcRenderer.invoke("electron-store", "set", key, value),
+            del: (key) => ipcRenderer.invoke("electron-store", "del", key, null),
+            clr: () => ipcRenderer.invoke("electron-store", "clr", null, null)
         });
     } catch (error) {
         logger.error("Failed to expose Electron API in the renderer process: ", error);
@@ -61,4 +76,5 @@ if (process.contextIsolated) {
     window.api = api;
     window.windowControls = {};
     window.explorer = {};
+    window.store = {};
 }

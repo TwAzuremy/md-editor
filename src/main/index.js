@@ -15,7 +15,7 @@ const store = new Store();
 function createWindow() {
     // Get the window bounds from the store or set default values
     // noinspection JSUnresolvedReference
-    const windowBounds = store.get("md-editor.windowBounds");
+    const windowBounds = store.get("md-editor.window-bounds");
 
     // Get the work area size of the primary display
     const {width, height} = screen.getPrimaryDisplay().workAreaSize;
@@ -96,7 +96,31 @@ function createWindow() {
     mainWindow.on("resize", saveWindowBounds);
     mainWindow.on("move", saveWindowBounds);
 
+    ipcMain.handle("electron-store", (_, operation, key, value) => {
+        switch (operation) {
+            case "get":
+                // noinspection JSUnresolvedReference
+                return store.get(key);
+            case "set":
+                // noinspection JSUnresolvedReference
+                store.set(key, value);
+                return true;
+            case "del":
+                // noinspection JSUnresolvedReference
+                store.delete(key);
+                return true;
+            case "clr":
+                // noinspection JSUnresolvedReference
+                store.clear();
+                return true;
+        }
+    });
+
     ipcMain.handle("check-path-exists", (_, dirPath) => {
+        if (!dirPath) {
+            return false;
+        }
+
         try {
             return fs.existsSync(dirPath);
         } catch (error) {
@@ -127,8 +151,7 @@ function createWindow() {
 
                     // If the type is the same, sort by name
                     return a.name.localeCompare(
-                        b.name,
-                        void 0,
+                        b.name, void 0,
                         // Turn on natural sorting of numbers, regardless of case sensitivity
                         {
                             numeric: true,
@@ -153,6 +176,20 @@ function createWindow() {
                 path: fullPath,
                 name: path.basename(fullPath)
             };
+        }
+    });
+
+    ipcMain.handle("open-in-system-explorer", async (_, dirPath) => {
+        if (!dirPath) {
+            return false;
+        }
+
+        try {
+            await shell.openPath(dirPath);
+
+            return true;
+        } catch (error) {
+            return false;
         }
     });
 }

@@ -27,7 +27,7 @@ const MDEFolder = memo(({
     const openAndCloseFolder = useCallback(async () => {
         if (fileList.length) {
             setFileList([]);
-            morph(false);
+            morph();
 
             return;
         }
@@ -37,7 +37,7 @@ const MDEFolder = memo(({
         const list = await window.explorer.readDirectory(fullPath, false);
 
         setFileList(list);
-        morph(true);
+        morph();
     }, [dirPath, name, fileList.length]);
 
     const renderFileItem = useCallback((file, index) => {
@@ -58,16 +58,16 @@ const MDEFolder = memo(({
     /**
      * Morphs the folder icon.
      *
-     * @param {boolean} isOpen If the folder is open.
-     *
      * @private
      */
-    function morph(isOpen) {
+    function morph() {
         const svg = folderEl.current.querySelector("&>.mde-button svg");
         const folder = svg.querySelector(".folder");
         const white = svg.querySelector(".white");
 
-        const state = isOpen ? "Open" : "Close";
+        const hasActive = folderEl.current.classList.contains("active");
+        folderEl.current.classList.toggle("active", !hasActive);
+        const state = !hasActive ? "Open" : "Close";
 
         folder.setAttribute("d", svg.dataset[`folder${state}`]);
         white.setAttribute("d", svg.dataset[`white${state}`]);

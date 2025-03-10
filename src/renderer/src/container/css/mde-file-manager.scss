@@ -73,7 +73,11 @@
             --mde-button-color: var(--ui-color-accent-color);
             --mde-button-hover-color: var(--ui-color-accent-color);
 
-            margin: 0 var(--mde-popover-padding) var(--plate-spacing);
+            margin: 0 var(--mde-popover-padding);
+
+            + * {
+                margin-top: var(--plate-spacing);
+            }
         }
 
         &__list {

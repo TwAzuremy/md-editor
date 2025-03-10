@@ -1,9 +1,10 @@
 import "@components/css/mde-folder.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
-import {useRef, useState, useCallback, memo} from "react";
+import {useRef, useState, useCallback, memo, useEffect, useMemo} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
+import {useTemp} from "@renderer/provider/TempProvider.jsx";
 
 /**
  * folder component, used to display a folder and its contents
@@ -24,21 +25,28 @@ const MDEFolder = memo(({
 
     const folderEl = useRef(null);
 
+    const {getTemp, setTemp} = useTemp();
+
+    // Listen for temporary values.
+    const getTaggedFolder = useMemo(() => getTemp("tagged-folder"), [getTemp]);
+    useEffect(() => {
+        folderEl.current.classList.toggle("active", getTaggedFolder === dirPath + "\\" + name);
+    }, [getTaggedFolder, fileList]);
+
     const openAndCloseFolder = useCallback(async () => {
+        const fullPath = dirPath + "\\" + name;
+        setTemp("tagged-folder", fullPath);
+        morph();
+
         if (fileList.length) {
             setFileList([]);
-            morph();
 
             return;
         }
 
-        const fullPath = dirPath + "\\" + name;
-
         const list = await window.explorer.readDirectory(fullPath, false);
-
         setFileList(list);
-        morph();
-    }, [dirPath, name, fileList.length]);
+    }, [dirPath, name, fileList]);
 
     const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;

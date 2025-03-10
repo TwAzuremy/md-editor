@@ -32,6 +32,12 @@
         }
     }
 
+    &.active {
+        > .mde-button {
+            --mde-button-color: var(--ui-color-background-folder);
+        }
+    }
+
     .twig {
         width: var(--size-svg-normal);
         height: var(--size-svg-normal);

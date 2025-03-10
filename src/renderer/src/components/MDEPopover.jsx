@@ -3,6 +3,24 @@ import "@components/css/mde-popover.scss";
 import React, {useEffect, useRef, useState} from "react";
 import {logger} from "@utils/Logger.js";
 
+/**
+ * A Popover component with a floating content.
+ *
+ * @function MDEPopover
+ *
+ * @param {ReactElement} children The default slot content.
+ * @param {string} [direction="bottom"] The direction of the floating content.
+ * @param {string} [nearEdge="center"] The near edge of the floating content.
+ * @param {*} props Other props of the component.
+ *
+ * @returns {ReactElement} The rendered component.
+ *
+ * @example
+ * <MDEPopover direction={"bottom"} nearEdge={"center"}>
+ *     <div slot={"default"}>Default content</div>
+ *     <div slot={"floating"}>Floating content</div>
+ * </MDEPopover>
+ */
 function MDEPopover({
                         children,
                         direction = "bottom",

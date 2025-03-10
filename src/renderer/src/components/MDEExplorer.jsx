@@ -6,10 +6,16 @@ import MDEFile from "@components/MDEFile.jsx";
 
 /**
  * The file browser component is used to display the contents of the directory
+ *
+ * @function MDEExplorer
  * 
- * @param {Object} props component attributes
- * @param {string|null} props.dirPath directory path
+ * @param {*} props component attributes
+ * @param {string|null} dirPath directory path
+ *
  * @returns {React.ReactElement} renderer element
+ *
+ * @example
+ * <MDEExplorer dirPath={"D:\\Notes"}/>
  */
 const MDEExplorer = memo(({dirPath = null}) => {
     const [fileList, setFileList] = useState([]);

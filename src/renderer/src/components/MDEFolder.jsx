@@ -7,14 +7,19 @@ import MDEFile from "@components/MDEFile.jsx";
 
 /**
  * folder component, used to display a folder and its contents
- * 
+ *
  * @param {Object} props component properties
  * @param {string} props.dirPath path to folder
  * @param {string} props.name folder name
  * @param {boolean} [props.showTwigs=true] is show the twigs or not
  * @returns {React.ReactElement} rendered element
  */
-const MDEFolder = memo(function MDEFolder({ dirPath, name, showTwigs = true, ...props }) {
+const MDEFolder = memo(({
+                            dirPath,
+                            name,
+                            showTwigs = true,
+                            ...props
+                        }) => {
     const [fileList, setFileList] = useState([]);
 
     const folderEl = useRef(null);
@@ -62,7 +67,7 @@ const MDEFolder = memo(function MDEFolder({ dirPath, name, showTwigs = true, ...
         const folder = svg.querySelector(".folder");
         const white = svg.querySelector(".white");
 
-        const state = isOpen ? 'Open' : 'Close';
+        const state = isOpen ? "Open" : "Close";
 
         folder.setAttribute("d", svg.dataset[`folder${state}`]);
         white.setAttribute("d", svg.dataset[`white${state}`]);
@@ -70,9 +75,9 @@ const MDEFolder = memo(function MDEFolder({ dirPath, name, showTwigs = true, ...
 
     return (
         <div className={"mde-folder"} {...props} ref={folderEl}>
-            {showTwigs && <IconLoader name={"twig"} className={"twig"} />}
+            {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
-            <MDEButton icon={<IconLoader name={"folder"} />} text={name} onClick={openAndCloseFolder} />
+            <MDEButton icon={<IconLoader name={"folder"}/>} text={name} onClick={openAndCloseFolder}/>
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

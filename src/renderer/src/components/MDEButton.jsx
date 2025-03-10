@@ -19,7 +19,7 @@ import React, { memo } from "react";
  * @example
  * <MDEButton icon={<IconLoader name="icon"/>} text={"Text"} name={"Icon-Text Button"}/>
  */
-const MDEButton = memo(function MDEButton({
+const MDEButton = memo(({
     icon,
     text,
     iconPosition = "prefix",
@@ -27,7 +27,7 @@ const MDEButton = memo(function MDEButton({
     active = false,
     className,
     ...props
-}) {
+}) => {
     // Change the class name construction to increase readability
     const buttonClassName = [
         "mde-button",
@@ -35,7 +35,7 @@ const MDEButton = memo(function MDEButton({
         isElasticity ? "mde-button__elasticity" : "",
         active ? "active" : ""
     ].filter(Boolean).join(" ");
-    
+
     return (
         <button {...props} className={buttonClassName}>
             {(icon && iconPosition === "prefix") && <span className="mde-button__icon">{icon}</span>}

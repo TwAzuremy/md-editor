@@ -13,7 +13,7 @@ import { memo } from "react";
  * @param {boolean} [props.showTwigs=true] show Twigs or not
  * @returns {React.ReactElement} rendered element
  */
-const MDEFile = memo(function MDEFile({dirPath, name, showTwigs = true, ...props}) {
+const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
     return (
         <div className="mde-file" {...props}>
             {showTwigs && <IconLoader name="twig" className="twig"/>}

@@ -1,6 +1,6 @@
-import React, {lazy, memo, Suspense, useMemo} from "react";
+import React, {lazy, memo, Suspense} from "react";
 
-// 使用全局缓存以避免重复导入
+// Use a global cache to avoid duplicate imports
 const iconCache = {};
 
 /**
@@ -17,16 +17,15 @@ const iconCache = {};
  * <IconLoader name={"icon-name"}/>
  */
 const IconLoader = memo(({name, ...props}) => {
-    const Icon = useMemo(() => {
-
+    const Icon = () => {
         if (iconCache[name]) {
             return iconCache[name];
         }
-        
+
         const ImportedIcon = lazy(() => import(`@assets/icons/${name}.svg?react`));
         iconCache[name] = ImportedIcon;
         return ImportedIcon;
-    }, [name]); // Recalculate only when name changes
+    };
 
     return (
         <Suspense fallback={null}>

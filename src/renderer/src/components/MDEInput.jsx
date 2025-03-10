@@ -11,10 +11,10 @@ import {useRef, useCallback, memo} from "react";
  * @param {React.ReactElement} [props.icon] input icon
  * @returns {React.ReactElement} rendered element
  */
-const MDEInput = memo(function MDEInput({
+const MDEInput = memo(({
     icon,
     ...props
-}) {
+}) => {
     const inputEl = useRef(null);
 
     const clear = useCallback(() => {

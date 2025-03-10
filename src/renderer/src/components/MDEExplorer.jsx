@@ -11,7 +11,7 @@ import MDEFile from "@components/MDEFile.jsx";
  * @param {string|null} props.dirPath directory path
  * @returns {React.ReactElement} renderer element
  */
-const MDEExplorer = memo(function MDEExplorer({dirPath = null}) {
+const MDEExplorer = memo(({dirPath = null}) => {
     const [fileList, setFileList] = useState([]);
 
     const readDirectory = useCallback(async (path) => {

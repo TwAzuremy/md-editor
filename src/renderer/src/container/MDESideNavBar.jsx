@@ -23,7 +23,6 @@ const LOGO = lazy(() => import(`@resources/icons/icon.svg?react`));
 function MDESideNavBar({navClickEvent, navList = []}) {
     const [renderId, setRenderId] = useState(null);
 
-    // TODO: [Fixed] After updating the value of useState, too many components may be re-rendered, causing the page to flicker noticeably.
     function navClickHandle(id = null) {
         navClickEvent?.(id);
         setRenderId(id);

@@ -5,6 +5,7 @@ import {useRef, useState, useCallback, memo, useMemo, useEffect} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
+import ElectronStore from "@utils/ElectronStore.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -31,7 +32,7 @@ const MDEFolder = memo(({
     const {getTemp, setTemp} = useTemp();
 
     // Listen for temporary values.
-    const taggedFolderPath = useMemo(() => getTemp("tagged-folder"), [getTemp]);
+    const taggedFolderPath = useMemo(() => getTemp(ElectronStore.KEY_TAGGED_FOLDER), [getTemp]);
 
     /**
      * Get the contents of the folder.
@@ -56,7 +57,7 @@ const MDEFolder = memo(({
     };
 
     const openAndCloseFolder = async () => {
-        setTemp("tagged-folder", fullPath);
+        setTemp(ElectronStore.KEY_TAGGED_FOLDER, fullPath);
         morph();
 
         await handleFolderChange(false);
@@ -93,7 +94,7 @@ const MDEFolder = memo(({
 
             // If a folder is deleted, and the folder is selected, its value in the temporary cache is removed.
             if (taggedFolderPath === fullPath) {
-                setTemp("tagged-folder", void 0);
+                setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
             }
         };
     }, [hasActive]);

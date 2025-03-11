@@ -5,6 +5,7 @@ import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDETooltip from "@components/MDETooltip.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
+import ElectronStore from "@utils/ElectronStore.js";
 
 const MDEExplorerController = memo(({
                                         dirPath = null,
@@ -17,12 +18,12 @@ const MDEExplorerController = memo(({
         {
             icon: <IconLoader name={"folder-plus"}/>,
             tip: "New Folder",
-            onClick: () => onCreateFile?.(getTemp("tagged-folder"), false)
+            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), false)
         },
         {
             icon: <IconLoader name={"file-plus"}/>,
             tip: "New File",
-            onClick: () => onCreateFile?.(getTemp("tagged-folder"), true)
+            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), true)
         },
         {
             icon: <IconLoader name={"refresh"}/>,

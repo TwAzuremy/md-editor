@@ -5,6 +5,7 @@ import MDEFolder from "@components/MDEFolder.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import {logger} from "@utils/Logger.js";
+import ElectronStore from "@utils/ElectronStore.js";
 
 /**
  * The file browser component is used to display the contents of the directory
@@ -25,7 +26,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     const [fileList, setFileList] = useState([]);
 
-    const {getTemp, setTemp} = useTemp();
+    const {setTemp} = useTemp();
 
     const readDirectory = useCallback(async (path) => {
         return await window.explorer.readDirectory(path, false);
@@ -40,7 +41,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     }, [dirPath, readDirectory]);
 
     useEffect(() => {
-        setTemp("tagged-folder", void 0);
+        setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
 
         dirPathRef.current = dirPath;
     }, [dirPath]);
@@ -71,6 +72,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     async function createFile(dirPath = void 0, isFile = false) {
         const isSuccess = await window.explorer.createFile(
+            // TODO [BUG] When "dirPath" is empty, it does not switch to "dirPathRef.current", which is the path to the workspace.
             dirPath || dirPathRef.current,
             isFile ? "New File" : "New Folder",
             isFile

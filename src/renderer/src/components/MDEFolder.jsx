@@ -1,7 +1,7 @@
 import "@components/css/mde-folder.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
-import {useRef, useState, useCallback, memo, useEffect, useMemo} from "react";
+import {useRef, useState, useCallback, memo, useMemo, useEffect} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
@@ -22,28 +22,81 @@ const MDEFolder = memo(({
                             ...props
                         }) => {
     const [fileList, setFileList] = useState([]);
+    const [hasActive, setHasActive] = useState(false);
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
 
     const folderEl = useRef(null);
+    const watcherIdRef = useRef(null);
 
     const {getTemp, setTemp} = useTemp();
 
     // Listen for temporary values.
     const taggedFolderPath = useMemo(() => getTemp("tagged-folder"), [getTemp]);
 
-    const openAndCloseFolder = useCallback(async () => {
-        setTemp("tagged-folder", fullPath);
-        morph();
-
-        if (fileList.length) {
+    /**
+     * Get the contents of the folder.
+     *
+     * @param {boolean} [isForced=false] The isForced parameter is used to get content updates when the folder is open,
+     * rather than closing the folder.
+     * @returns {Promise<void>}
+     */
+    const handleFolderChange = async (isForced = false) => {
+        if (hasActive && !isForced) {
             setFileList([]);
+            if (watcherIdRef.current) {
+                await window.explorer.unwatchFolder(watcherIdRef.current);
+                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+            }
 
             return;
         }
 
         const list = await window.explorer.readDirectory(fullPath, false);
         setFileList(list);
-    }, [fullPath, fileList]);
+    };
+
+    const openAndCloseFolder = async () => {
+        setTemp("tagged-folder", fullPath);
+        morph();
+
+        await handleFolderChange(false);
+    };
+
+    async function refresh(id) {
+        // Verify that the listener is current
+        if (id === watcherIdRef.current) {
+            await handleFolderChange(true);
+        }
+    }
+
+    useEffect(() => {
+        const startWatching = async () => {
+            try {
+                watcherIdRef.current = await window.explorer.watchFolder(fullPath);
+                window.explorer.onWatchUpdate(({watcherId: id}) => refresh(id));
+            } catch (error) {
+                console.error("Watch failed:", error);
+            }
+        };
+
+        // When the folder is opened, the listener is initiated.
+        if (hasActive) {
+            startWatching();
+        }
+
+        return () => {
+            // When the component is unmounted, remove the folder listener and IPC listener
+            if (watcherIdRef.current) {
+                window.explorer.unwatchFolder(watcherIdRef.current);
+                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+            }
+
+            // If a folder is deleted, and the folder is selected, its value in the temporary cache is removed.
+            if (taggedFolderPath === fullPath) {
+                setTemp("tagged-folder", void 0);
+            }
+        };
+    }, [hasActive]);
 
     /**
      * Morphs the folder icon.
@@ -55,8 +108,7 @@ const MDEFolder = memo(({
         const folder = svg.querySelector(".folder");
         const white = svg.querySelector(".white");
 
-        const hasActive = folderEl.current.classList.contains("active");
-        folderEl.current.classList.toggle("active", !hasActive);
+        setHasActive(!hasActive);
         const state = !hasActive ? "Open" : "Close";
 
         folder.setAttribute("d", svg.dataset[`folder${state}`]);
@@ -78,7 +130,7 @@ const MDEFolder = memo(({
     }, [fullPath]);
 
     return (
-        <div className={"mde-folder"} {...props} ref={folderEl}>
+        <div className={`mde-folder ${hasActive ? "active" : ""}`} {...props} ref={folderEl}>
             {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton
@@ -87,7 +139,7 @@ const MDEFolder = memo(({
                 active={taggedFolderPath === fullPath}
                 onClick={openAndCloseFolder}/>
             {
-                fileList.length !== 0 &&
+                fileList && fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>
                     {fileList.map((file, index) => renderFileItem(file, index))}
                 </div>

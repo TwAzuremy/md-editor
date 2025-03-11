@@ -4,6 +4,7 @@ import {useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRe
 import MDEFolder from "@components/MDEFolder.jsx";
 import MDEFile from "@components/MDEFile.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
+import {logger} from "@utils/Logger.js";
 
 /**
  * The file browser component is used to display the contents of the directory
@@ -24,7 +25,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     const [fileList, setFileList] = useState([]);
 
-    const {setTemp} = useTemp();
+    const {getTemp, setTemp} = useTemp();
 
     const readDirectory = useCallback(async (path) => {
         return await window.explorer.readDirectory(path, false);
@@ -64,12 +65,25 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
      * Updates the file list state with the contents of the directory at the current path.
      */
     function refresh() {
+        setFileList([]);
         readDirectory(dirPathRef.current).then(list => setFileList(list || []));
+    }
+
+    async function createFile(dirPath = void 0, isFile = false) {
+        const isSuccess = await window.explorer.createFile(
+            dirPath || dirPathRef.current,
+            isFile ? "New File" : "New Folder",
+            isFile
+        );
+
+        if (isSuccess) {
+            logger.info("File created successfully: " + isSuccess);
+        }
     }
 
     // Export functions
     useImperativeHandle(ref, () => ({
-        refresh
+        refresh, createFile
     }));
 
     return (

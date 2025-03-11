@@ -45,7 +45,8 @@ if (process.contextIsolated) {
              * @param {boolean} showHiddenFiles
              * @returns {Promise<[{name: string, type: string}]>}
              */
-            readDirectory: (dirPath, showHiddenFiles = false) => ipcRenderer.invoke("read-directory", dirPath, showHiddenFiles),
+            readDirectory: (dirPath, showHiddenFiles = false) =>
+                ipcRenderer.invoke("read-directory", dirPath, showHiddenFiles),
             /**
              * Open a directory dialog.
              *
@@ -58,7 +59,25 @@ if (process.contextIsolated) {
              * @param {string|null} dirPath - Path to the directory to open.
              * @returns {Promise<boolean>}
              */
-            openInSystemExplorer: (dirPath) => ipcRenderer.invoke("open-in-system-explorer", dirPath)
+            openInSystemExplorer: (dirPath) => ipcRenderer.invoke("open-in-system-explorer", dirPath),
+            /**
+             * Create a file or folder.
+             *
+             * @param {string|null} dirPath - Path to the directory to create the file or folder in.
+             * @param {string} name - Name of the file or folder to create.
+             * @param {boolean} [isFile=false] - If true, create a file; otherwise, create a folder.
+             * @returns {Promise<boolean>} - A promise that resolves to true if the file or folder was created successfully.
+             */
+            createFile: (dirPath, name, isFile = false) =>
+                ipcRenderer.invoke("create-file", dirPath, name, isFile),
+            watchFolder: (dirPath) => ipcRenderer.invoke("watch-folder", dirPath),
+            unwatchFolder: (watcherId) => ipcRenderer.invoke("unwatch-folder", watcherId),
+            onWatchUpdate: (callback) => {
+                ipcRenderer.on("watch-folder-update", (_, data) => callback(data));
+            },
+            removeWatchListeners: (callback) => {
+                ipcRenderer.removeListener("watch-folder-update", (_, data) => callback(data));
+            }
         });
 
         // noinspection JSUnresolvedReference

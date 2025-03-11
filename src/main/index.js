@@ -192,6 +192,32 @@ function createWindow() {
             return false;
         }
     });
+    
+    // Handle file/folder move operation
+    ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
+        if (!sourcePath || !destinationPath) {
+            return { success: false, error: "Invalid paths provided" };
+        }
+
+        try {
+            // Get the base name of the source
+            const baseName = path.basename(sourcePath);
+            // Create the full destination path including the file/folder name
+            const fullDestPath = path.join(destinationPath, baseName);
+            
+            // Check if destination already exists
+            if (fs.existsSync(fullDestPath)) {
+                return { success: false, error: "Destination already exists" };
+            }
+            
+            // Move the file/folder
+            fs.renameSync(sourcePath, fullDestPath);
+            
+            return { success: true, newPath: fullDestPath };
+        } catch (error) {
+            return { success: false, error: error.message };
+        }
+    });
 }
 
 /**

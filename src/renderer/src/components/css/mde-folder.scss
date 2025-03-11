@@ -61,3 +61,12 @@
         border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
     }
 }
+
+.mde-folder {
+    &.drag-over {
+        > .mde-button {
+            background-color: var(--color-primary-100);
+            border: 1px dashed var(--color-primary-500);
+        }
+    }
+}

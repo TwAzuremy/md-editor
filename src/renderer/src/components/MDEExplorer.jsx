@@ -36,6 +36,16 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         }
 
         readDirectory(dirPath).then(list => setFileList(list || []));
+
+        // 添加refresh-explorer事件监听
+        const handleRefresh = () => {
+            readDirectory(dirPath).then(list => setFileList(list || []));
+        };
+        window.addEventListener('refresh-explorer', handleRefresh);
+
+        return () => {
+            window.removeEventListener('refresh-explorer', handleRefresh);
+        };
     }, [dirPath, readDirectory]);
 
     useEffect(() => {

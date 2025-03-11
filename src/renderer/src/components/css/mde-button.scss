@@ -9,6 +9,7 @@
     --mde-button-element-spacing: 8px;
     --mde-button-color: var(--ui-color-unchecked);
     --mde-button-hover-color: var(--ui-color-checked);
+    --mde-button-active-color: var(--ui-color-accent-color);
     --mde-button-hover-amplitude: 1.05;
     --mde-button-active-amplitude: 0.95;
 
@@ -68,7 +69,7 @@
     }
 
     &.active {
-        color: var(--ui-color-accent-color);
+        color: var(--mde-button-active-color);
     }
 
     &.mde-button__elasticity {

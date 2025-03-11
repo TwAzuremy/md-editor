@@ -3,6 +3,7 @@ import "@components/css/mde-explorer.scss";
 import {useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef, memo} from "react";
 import MDEFolder from "@components/MDEFolder.jsx";
 import MDEFile from "@components/MDEFile.jsx";
+import {useTemp} from "@renderer/provider/TempProvider.jsx";
 
 /**
  * The file browser component is used to display the contents of the directory
@@ -23,6 +24,8 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     const [fileList, setFileList] = useState([]);
 
+    const {setTemp} = useTemp();
+
     const readDirectory = useCallback(async (path) => {
         return await window.explorer.readDirectory(path, false);
     }, []);
@@ -36,7 +39,9 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     }, [dirPath, readDirectory]);
 
     useEffect(() => {
-        dirPathRef.current = dirPath
+        setTemp("tagged-folder", void 0);
+
+        dirPathRef.current = dirPath;
     }, [dirPath]);
 
     const renderFileItem = useCallback((file, index) => {
@@ -52,8 +57,6 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         } else if (file.type === "file") {
             return <MDEFile key={key} {...commonProps}/>;
         }
-
-        return null;
     }, [dirPath]);
 
     /**

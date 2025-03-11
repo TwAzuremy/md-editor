@@ -22,19 +22,16 @@ const MDEFolder = memo(({
                             ...props
                         }) => {
     const [fileList, setFileList] = useState([]);
+    const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
 
     const folderEl = useRef(null);
 
     const {getTemp, setTemp} = useTemp();
 
     // Listen for temporary values.
-    const getTaggedFolder = useMemo(() => getTemp("tagged-folder"), [getTemp]);
-    useEffect(() => {
-        folderEl.current.classList.toggle("active", getTaggedFolder === dirPath + "\\" + name);
-    }, [getTaggedFolder, fileList]);
+    const taggedFolderPath = useMemo(() => getTemp("tagged-folder"), [getTemp]);
 
     const openAndCloseFolder = useCallback(async () => {
-        const fullPath = dirPath + "\\" + name;
         setTemp("tagged-folder", fullPath);
         morph();
 
@@ -46,22 +43,7 @@ const MDEFolder = memo(({
 
         const list = await window.explorer.readDirectory(fullPath, false);
         setFileList(list);
-    }, [dirPath, name, fileList]);
-
-    const renderFileItem = useCallback((file, index) => {
-        const key = file.name + file.type + index;
-        const commonProps = {
-            dirPath: dirPath + "\\" + name,
-            name: file.name
-        };
-
-        if (file.type === "directory") {
-            return <MDEFolder key={key} {...commonProps} />;
-        } else if (file.type === "file") {
-            return <MDEFile key={key} {...commonProps} />;
-        }
-        return null;
-    }, [dirPath, name]);
+    }, [fullPath, fileList]);
 
     /**
      * Morphs the folder icon.
@@ -81,11 +63,29 @@ const MDEFolder = memo(({
         white.setAttribute("d", svg.dataset[`white${state}`]);
     }
 
+    const renderFileItem = useCallback((file, index) => {
+        const key = file.name + file.type + index;
+        const commonProps = {
+            dirPath: fullPath,
+            name: file.name
+        };
+
+        if (file.type === "directory") {
+            return <MDEFolder key={key} {...commonProps} />;
+        } else if (file.type === "file") {
+            return <MDEFile key={key} {...commonProps} />;
+        }
+    }, [fullPath]);
+
     return (
         <div className={"mde-folder"} {...props} ref={folderEl}>
             {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
-            <MDEButton icon={<IconLoader name={"folder"}/>} text={name} onClick={openAndCloseFolder}/>
+            <MDEButton
+                icon={<IconLoader name={"folder"}/>}
+                text={name}
+                active={taggedFolderPath === fullPath}
+                onClick={openAndCloseFolder}/>
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

@@ -20,6 +20,7 @@
     > .mde-button {
         --mde-button-color: var(--ui-color-text-primary);
         --mde-button-hover-color: var(--ui-color-background-folder);
+        --mde-button-active-color: var(--ui-color-background-folder);
         --mde-button-hover-amplitude: 1.02;
         --mde-button-active-amplitude: 0.99;
 
@@ -29,12 +30,6 @@
 
         &:hover {
             --mde-button-background: var(--ui-color-background-folder);
-        }
-    }
-
-    &.active {
-        > .mde-button {
-            --mde-button-color: var(--ui-color-background-folder);
         }
     }
 

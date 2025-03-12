@@ -52,11 +52,6 @@
         }
     }
 
-    /* Add drag style */
-    &:active {
-        opacity: 0.7;
-    }
-
     &[draggable=true] {
         cursor: move;
 

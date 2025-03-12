@@ -5,6 +5,7 @@ import IconLoader from "@components/IconLoader.jsx";
 import {memo, useMemo, useState} from "react";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
+import {handleDragLeave, handleDragOver} from "@utils/DragDropHandler.js";
 
 /**
  * File component, used to display directory items
@@ -31,23 +32,6 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
         e.dataTransfer.dropEffect = "move";
 
         dragEnd(e, dirPath, fullPath);
-    };
-
-    // Handle drag over event
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Set drag effect
-        e.dataTransfer.dropEffect = "move";
-        setIsDragOver(true);
-    };
-
-    // Handle drag leave event
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragOver(false);
     };
 
     // Handle drop event
@@ -88,23 +72,26 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
             if (!result.success) {
                 logger.warn("Move failed:", result.error);
             }
-            
+
         } catch (error) {
             logger.error("Error handling drag and drop operation:", error);
         }
     };
 
     return (
-        <div className={`mde-file ${isDragOver ? "drag-over" : ""}`}
-            {...props}
-            draggable={true}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}>
+        <div className={`mde-file`}
+             {...props}>
             {showTwigs && <IconLoader name="twig" className="twig"/>}
             {showTwigs && <div className="trunk"></div>}
-            <MDEButton icon={<IconLoader name="file"/>} text={name}/>
+            <MDEButton
+                className={`${isDragOver ? "drag-over" : ""}`}
+                icon={<IconLoader name="file"/>}
+                text={name}
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}/>
         </div>
     );
 });

@@ -8,7 +8,7 @@ import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
-import {handleDragOver, handleDragLeave, handleDrop, validateDragDrop} from "@utils/DragDropHandler.js";
+import {handleDragLeave, handleDragOver, validateDragDrop} from "@utils/DragDropHandler.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -134,21 +134,6 @@ const MDEFolder = memo(({
         dragEnd(e, dirPath, fullPath);
     };
 
-    // Handle drag over events
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        e.dataTransfer.dropEffect = "move";
-        setIsDragOver(true);
-    };
-
-    // Handle drag leave events
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragOver(false);
-    };
-
     // Handle drop events
     const handleDrop = async (e) => {
         e.preventDefault();
@@ -186,8 +171,6 @@ const MDEFolder = memo(({
             // Using fullPath as dirPath for child components is correct
             dirPath: fullPath,
             name: file.name,
-            // Ensure child items correctly inherit drag functionality
-            draggable: true,
             // Pass all drag-related props to ensure nested subdirectories also support dragging correctly
             ...props
         };
@@ -202,21 +185,22 @@ const MDEFolder = memo(({
     }, [fullPath, props]);
 
     return (
-        <div className={`mde-folder ${isDragOver ? "drag-over" : ""} ${hasActive ? "active" : ""}`}
+        <div className={`mde-folder${hasActive ? " active" : ""}`}
              {...props}
-             ref={folderEl}
-             draggable={true}
-             onDragStart={handleDragStart}
-             onDragOver={handleDragOver}
-             onDragLeave={handleDragLeave}
-             onDrop={handleDrop}>
+             ref={folderEl}>
             {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton
+                className={`${isDragOver ? "drag-over" : ""}`}
                 icon={<IconLoader name={"folder"}/>}
                 text={name}
                 active={taggedFolderPath === fullPath}
-                onClick={openAndCloseFolder}/>
+                onClick={openAndCloseFolder}
+                draggable={true}
+                onDragStart={handleDragStart}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}/>
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

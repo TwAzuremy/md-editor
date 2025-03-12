@@ -60,21 +60,4 @@
         height: calc(100% + var(--mde-folder-spacing));
         border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
     }
-    &[draggable=true] {
-        cursor: move;
-
-        &[data-is-dragging=true] {
-            > .trunk,
-            > .twig {
-                display: none;
-            }
-
-            .mde-folder__file-list {
-                .trunk,
-                .twig {
-                    display: none;
-                }
-            }
-        }
-    }
 }

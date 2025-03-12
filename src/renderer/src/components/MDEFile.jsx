@@ -14,7 +14,7 @@ import path from "path";
  * @param {boolean} [props.showTwigs=true] show Twigs or not
  * @returns {React.ReactElement} rendered element
  */
-const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
+const MDEFile = memo(({ dirPath, name, showTwigs = true, ...props }) => {
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -63,7 +63,15 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
 
             // If source and target are the same, do not perform operation
             if (sourcePath === fullPath) {
-                console.log('MDEFile - handleDrop - 源与目标相同，取消操作');
+                console.log('MDEFile - handleDrop - Source and target are the same, operation cancelled');
+                return;
+            }
+
+            // Get source directory path
+            const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf('\\'));
+            // If source directory is the same as target directory, cancel operation
+            if (sourceDir === dirPath) {
+                console.log('MDEFile - handleDrop - Source and target directory are the same, operation cancelled');
                 return;
             }
 
@@ -76,21 +84,26 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
                 return;
             }
 
-            // Only output debug information, do not perform actual move operation
-            console.log('MDEFile - 拖拽调试信息', '源路径:', sourcePath, '目标路径:', targetDir);
-            
-            // Commented out actual move operation
-            // const result = await window.explorer.moveFileOrFolder(sourcePath, targetDir);
-            // console.log('MDEFile - moveFileOrFolder结果', result);
-            // 
-            // if (!result.success) {
-            //     console.error('Move failed:', result.error);
-            //     // Here you can add user interface prompts, such as using a toast component
-            //     return;
-            // }
-            
-            // No longer trigger refresh event
-            // window.dispatchEvent(new CustomEvent('refresh-explorer'));
+            // Execute move operation
+            console.log('MDEFile - Execute move operation', 'Source path:', sourcePath, 'Target path:', targetDir);
+
+            const result = await window.explorer.moveFileOrFolder(sourcePath, targetDir);
+            console.log('MDEFile - moveFileOrFolder result', result);
+
+            if (!result.success) {
+                console.error('Move failed:', result.error);
+                // Here you can add user interface prompts, such as using a toast component
+                return;
+            }
+
+            // Trigger explorer refresh
+            window.dispatchEvent(new CustomEvent('refresh-explorer'));
+
+            // Also refresh the source directory to update the file tree
+
+            if (sourceDir) {
+                window.dispatchEvent(new CustomEvent('refresh-explorer', { detail: { path: sourceDir } }));
+            }
         } catch (error) {
             console.error("Error handling drag and drop operation:", error);
         }
@@ -104,9 +117,9 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}>
-            {showTwigs && <IconLoader name="twig" className="twig"/>}
+            {showTwigs && <IconLoader name="twig" className="twig" />}
             {showTwigs && <div className="trunk"></div>}
-            <MDEButton icon={<IconLoader name="file"/>} text={name}/>
+            <MDEButton icon={<IconLoader name="file" />} text={name} />
         </div>
     );
 });

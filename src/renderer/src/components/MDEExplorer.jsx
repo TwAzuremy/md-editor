@@ -37,8 +37,16 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
         readDirectory(dirPath).then(list => setFileList(list || []));
 
-        // 添加refresh-explorer事件监听
-        const handleRefresh = () => {
+        // Add refresh-explorer event listener
+        const handleRefresh = (event) => {
+            // Check if the event has a specific path to refresh
+            const refreshPath = event.detail?.path;
+            
+            // If a specific path is provided and it's not the current directory, ignore it
+            if (refreshPath && refreshPath !== dirPath) {
+                return;
+            }
+            
             readDirectory(dirPath).then(list => setFileList(list || []));
         };
         window.addEventListener('refresh-explorer', handleRefresh);

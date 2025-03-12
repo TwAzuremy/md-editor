@@ -93,19 +93,19 @@ const MDEFolder = memo(({
         setIsDragOver(false);
     };
 
-    // handle drag over events
+    // Handle drop events
     const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
 
         try {
-            // get the source path and type
+            // Get the source path and type
             const sourcePath = e.dataTransfer.getData("text/plain");
             const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
 
-            // Only output debug information, do not perform actual move operation
-            console.log('MDEFolder - 拖拽调试信息', ':', sourcePath, ' -> ', fullPath);
+            // Output drag and drop debug information
+            console.log('MDEFolder - Drag Debug Info', ':', sourcePath, ' -> ', fullPath);
 
             // Path validation to prevent circular movement
             if (sourceData.type === "directory" && sourcePath === fullPath) {
@@ -119,23 +119,44 @@ const MDEFolder = memo(({
                 return;
             }
             
-            // Commented out actual move operation
-            // const result = await window.explorer.moveFileOrFolder(sourcePath, fullPath);
-            // console.log('MDEFolder - moveFileOrFolder结果', result);
-            // 
-            // if (!result.success) {
-            //     console.error('Move failed:', result.error);
-            //     // Here you can add user interface prompts, such as using a toast component
-            //     return;
-            // }
+            // Get source directory path
+            const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf('\\'));
+            
+            // Check if target is a parent directory of the source
+            // This prevents creating duplicates when dragging to any ancestor directory
+            if (sourcePath.startsWith(fullPath + '\\') || sourceDir === fullPath) {
+                console.log('MDEFolder - handleDrop - Target is a parent directory of the source, operation cancelled');
+                return;
+            }
+            
+            // If source directory is the same as target directory, cancel operation
+            if (sourceDir === dirPath) {
+                console.log('MDEFolder - handleDrop - Source and target directory are the same, operation cancelled');
+                return;
+            }
+            
+            // Execute move operation
+            const result = await window.explorer.moveFileOrFolder(sourcePath, fullPath);
+            console.log('MDEFolder - moveFileOrFolder result', result);
+            
+            if (!result.success) {
+                console.error('Move failed:', result.error);
+                // Here you can add user interface prompts, such as using a toast component
+                return;
+            }
 
-            // Commented out file list update
-            // if (fileList.length > 0) {
-            //     const list = await window.explorer.readDirectory(fullPath, false);
-            //     setFileList(list);
-            // }
-            // No longer trigger global refresh
-            // window.dispatchEvent(new CustomEvent('refresh-explorer'));
+            // If the current folder is expanded, update the file list
+            if (fileList.length > 0) {
+                const list = await window.explorer.readDirectory(fullPath, false);
+                setFileList(list);
+            }
+            // Trigger explorer refresh
+            window.dispatchEvent(new CustomEvent('refresh-explorer'));
+            
+            // Also refresh the source directory to update the file tree
+            if (sourceDir) {
+                window.dispatchEvent(new CustomEvent('refresh-explorer', { detail: { path: sourceDir } }));
+            }
         } catch (error) {
             console.error("Error handling drag and drop operation:", error);
         }

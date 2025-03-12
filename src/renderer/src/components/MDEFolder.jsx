@@ -8,6 +8,7 @@ import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
+import {handleDragOver, handleDragLeave, handleDrop, validateDragDrop} from "@utils/DragDropHandler.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -130,7 +131,6 @@ const MDEFolder = memo(({
             path: fullPath
         }));
         e.dataTransfer.effectAllowed = "move";
-
         dragEnd(e, dirPath, fullPath);
     };
 
@@ -163,22 +163,9 @@ const MDEFolder = memo(({
             // Output drag and drop debug information
             logger.info("[Folder][HandleDrop]", ":", sourcePath, " -> ", fullPath);
 
-            // Path validation to prevent circular movement
-            if (sourceData.type === "directory" && sourcePath === fullPath) {
-                return;
-            }
-
-            // Check if attempting to move a folder to its own subdirectory
-            if (sourceData.type === "directory" && fullPath.startsWith(sourcePath + "\\")) {
-                logger.warn("[Folder][HandleDrop] Cannot move to its own subdirectory");
-                return;
-            }
-
-            // Get source directory path
-            const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf("\\"));
-
-            // If source path and target path are the same, cancel operation
-            if (sourceDir === fullPath) {
+            const validation = validateDragDrop(sourcePath, fullPath, sourceData);
+            if (!validation.isValid) {
+                logger.warn("[Folder][HandleDrop]", validation.message);
                 return;
             }
 

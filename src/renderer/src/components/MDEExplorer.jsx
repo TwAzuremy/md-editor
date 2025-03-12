@@ -6,6 +6,7 @@ import MDEFile from "@components/MDEFile.jsx";
 import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import {logger} from "@utils/Logger.js";
 import ElectronStore from "@utils/ElectronStore.js";
+import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
  * The file browser component is used to display the contents of the directory
@@ -141,34 +142,9 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     return (
         <div className={`mde-explorer ${isDragOver ? "drag-over" : ""}`}
-             onDragOver={(e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-                 e.dataTransfer.dropEffect = "move";
-                 setIsDragOver(true);
-             }}
-             onDragLeave={(e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-                 setIsDragOver(false);
-             }}
-             onDrop={async (e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-                 setIsDragOver(false);
-
-                 try {
-                     const sourcePath = e.dataTransfer.getData("text/plain");
-                     if (dirPath) {
-                         const result = await window.explorer.moveFileOrFolder(sourcePath, dirPath);
-                         if (!result.success) {
-                             logger.warn("Move to workspace root failed:", result.error);
-                         }
-                     }
-                 } catch (error) {
-                     logger.error("Error handling drag and drop operation:", error);
-                 }
-             }}>
+             onDragOver={(e) => handleDragOver(e, setIsDragOver)}
+             onDragLeave={(e) => handleDragLeave(e, setIsDragOver)}
+             onDrop={(e) => handleDrop(e, dirPath, setIsDragOver)}>
             {fileList.map((file, index) => renderFileItem(file, index))}
         </div>
     );

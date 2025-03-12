@@ -9,6 +9,8 @@ import MDEExplorer from "@components/MDEExplorer.jsx";
 import MDEExplorerController from "@components/MDEExplorerController.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
 import {TempProvider} from "@renderer/provider/TempProvider.jsx";
+import {logger} from "@utils/Logger.js";
+import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
  * Use this when you don't have a workspace
@@ -102,31 +104,11 @@ function MDEFileManager() {
                 type={"text"}
                 placeholder={"Search Files"}
                 icon={<IconLoader name={"search"}/>}/>
-            <MDEPopover direction={"right"} nearEdge={"top"}>                
+            <MDEPopover direction={"right"} nearEdge={"top"}>
                 <div className={"workspace"} slot={"default"}
-                    onDragOver={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        e.dataTransfer.dropEffect = "move";
-                    }}
-                    onDrop={async (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        try {
-                            const sourcePath = e.dataTransfer.getData("text/plain");
-                            const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
-                            
-                            if (currentWorkspace.path) {
-                                const result = await window.explorer.moveFileOrFolder(sourcePath, currentWorkspace.path);
-                                if (!result.success) {
-                                    logger.warn("Move to workspace root failed:", result.error);
-                                }
-                            }
-                        } catch (error) {
-                            logger.error("Error handling drag and drop operation:", error);
-                        }
-                    }}>
+                    onDragOver={(e) => handleDragOver(e, () => {})}
+                    onDragLeave={(e) => handleDragLeave(e, () => {})}
+                    onDrop={(e) => handleDrop(e, currentWorkspace.path, () => {})}>
                     <p className={"workspace__name"}>{currentWorkspace.name}</p>
                     <IconLoader name={"chevron-right"}/>
                 </div>

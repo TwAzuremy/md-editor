@@ -17,7 +17,8 @@ export default defineConfig({
                 "@assets": resolve("src/renderer/src/assets"),
                 "@components": resolve("src/renderer/src/components"),
                 "@resources": resolve("resources"),
-                "@utils": resolve("src/utils")
+                "@utils": resolve("src/utils"),
+                "@store": resolve("src/store")
             }
         },
         plugins: [

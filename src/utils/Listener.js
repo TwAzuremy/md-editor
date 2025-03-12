@@ -1,4 +1,5 @@
 import {logger} from "@utils/Logger.js";
+import {validateDragDrop} from "@utils/DragDropHandler.js";
 
 export const dragEnd = (event, dirPath, fullPath) => {
     // Set data-is-dragging attribute
@@ -15,23 +16,12 @@ export const dragEnd = (event, dirPath, fullPath) => {
             const sourcePath = e.dataTransfer.getData("text/plain");
             const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
 
-            if (sourceData.type === "directory" && dirPath === fullPath) {
+            const validation = validateDragDrop(fullPath, workspaceRoot, sourceData);
+            if (!validation.isValid) {
+                logger.warn("[DragDrop] Validation failed:", validation.message);
                 return;
             }
 
-            // Check if attempting to move a folder to its own subdirectory
-            if (sourceData.type === "directory" && fullPath.startsWith(dirPath + "\\")) {
-                logger.warn("[Folder][HandleDrop] Cannot move to its own subdirectory");
-                return;
-            }
-
-            // Get source directory path
-            const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf("\\"));
-
-            // If source path and target path are the same, cancel operation
-            if (sourceDir === fullPath) {
-                return;
-            }
             // Move to workspace root
             const result = await window.explorer.moveFileOrFolder(fullPath, workspaceRoot);
 

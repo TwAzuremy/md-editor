@@ -5,6 +5,7 @@ import IconLoader from "@components/IconLoader.jsx";
 import {memo, useMemo, useState} from "react";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
+import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
  * File component, used to display directory items
@@ -33,78 +34,20 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
         dragEnd(e, dirPath, fullPath);
     };
 
-    // Handle drag over event
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        // Set drag effect
-        e.dataTransfer.dropEffect = "move";
-        setIsDragOver(true);
-    };
-
-    // Handle drag leave event
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragOver(false);
-    };
-
-    // Handle drop event
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragOver(false);
-
-        try {
-            // Get source path and type
-            const sourcePath = e.dataTransfer.getData("text/plain");
-            const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
-            logger.info("[File][HandleDrop]", sourcePath, "->", dirPath);
-
-            // If source and target are the same, do not perform operation
-            if (sourcePath === fullPath) {
-                return;
-            }
-
-            // Get source directory path
-            const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf("\\"));
-            // If source directory is the same as target directory, cancel operation
-            if (sourceDir === dirPath) {
-                return;
-            }
-
-            // Get target path (directory where the file is located)
-            const targetDir = dirPath;
-
-            // Path validation to prevent circular movement
-            if (sourceData.type === "directory" && targetDir.startsWith(sourcePath + "\\")) {
-                logger.warn("[File][HandleDrop] Cannot move to its own subdirectory");
-                return;
-            }
-
-            const result = await window.explorer.moveFileOrFolder(sourcePath, targetDir);
-
-            if (!result.success) {
-                logger.warn("Move failed:", result.error);
-            }
-            
-        } catch (error) {
-            logger.error("Error handling drag and drop operation:", error);
-        }
-    };
-
     return (
         <div className={`mde-file ${isDragOver ? "drag-over" : ""}`}
             {...props}
             draggable={true}
             onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}>
-            {showTwigs && <IconLoader name="twig" className="twig"/>}
+            onDragOver={(e) => handleDragOver(e, setIsDragOver)}
+            onDragLeave={(e) => handleDragLeave(e, setIsDragOver)}
+            onDrop={(e) => handleDrop(e, dirPath, setIsDragOver)}>
+            <MDEButton
+                className={"mde-file__button"}
+                icon={<IconLoader name={"file"}/>}
+                text={name}/>
+            {showTwigs && <IconLoader name="twig" className="twig" />}
             {showTwigs && <div className="trunk"></div>}
-            <MDEButton icon={<IconLoader name="file"/>} text={name}/>
         </div>
     );
 });

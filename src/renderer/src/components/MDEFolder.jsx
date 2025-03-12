@@ -134,15 +134,17 @@ const MDEFolder = memo(({
             
             if (!result.success) {
                 console.error('Move failed:', result.error);
-                // Here you can add user interface prompts, such as using a toast component
                 return;
             }
 
-            // If the current folder is expanded, update the file list
+            // Clear and reload file list for affected folders
+            setFileList([]);
+
             if (fileList.length > 0) {
                 const list = await window.explorer.readDirectory(fullPath, false);
                 setFileList(list);
             }
+            
             // Trigger explorer refresh
             window.dispatchEvent(new CustomEvent('refresh-explorer'));
             

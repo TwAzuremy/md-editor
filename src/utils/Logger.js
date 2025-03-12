@@ -30,8 +30,8 @@ class Logger {
         return level >= this.currentLevel;
     }
 
-    formatMessage(level, message) {
-        return `[${new Date().toISOString()}] [${level}] ${message}`;
+    formatMessage(level, ...message) {
+        return `[${new Date().toISOString()}] [${level}] ${message.join(" ")}`;
     }
 
     debug(...args) {

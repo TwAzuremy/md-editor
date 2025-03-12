@@ -60,13 +60,21 @@
         height: calc(100% + var(--mde-folder-spacing));
         border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
     }
-}
+    &[draggable=true] {
+        cursor: move;
 
-.mde-folder {
-    &.drag-over {
-        > .mde-button {
-            background-color: var(--color-primary-100);
-            border: 1px dashed var(--color-primary-500);
+        &[data-is-dragging=true] {
+            > .trunk,
+            > .twig {
+                display: none;
+            }
+
+            .mde-folder__file-list {
+                .trunk,
+                .twig {
+                    display: none;
+                }
+            }
         }
     }
 }

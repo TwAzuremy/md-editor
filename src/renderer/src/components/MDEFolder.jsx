@@ -129,6 +129,23 @@ const MDEFolder = memo(({
             path: fullPath
         }));
         e.dataTransfer.effectAllowed = "move";
+        // Set data-is-dragging attribute
+        e.currentTarget.setAttribute("data-is-dragging", "true");
+        // Add dragend event listener to remove the attribute and handle drop to workspace root
+        const handleDragEnd = async (e) => {
+            e.currentTarget.removeAttribute("data-is-dragging");
+            e.currentTarget.removeEventListener("dragend", handleDragEnd);
+            
+            // If dropped outside any valid drop target, move to workspace root
+            if (e.dataTransfer.dropEffect === "none") {
+                const workspaceRoot = dirPath.split("\\")[0];
+                const result = await window.explorer.moveFileOrFolder(fullPath, workspaceRoot);
+                if (!result.success) {
+                    logger.warn("Move to workspace root failed:", result.error);
+                }
+            }
+        };
+        e.currentTarget.addEventListener("dragend", handleDragEnd);
         // Prevent event bubbling to avoid triggering drag events on parent folders
         e.stopPropagation();
     };
@@ -215,13 +232,13 @@ const MDEFolder = memo(({
 
     return (
         <div className={`mde-folder ${isDragOver ? "drag-over" : ""} ${hasActive ? "active" : ""}`}
-             {...props}
-             ref={folderEl}
-             draggable={true}
-             onDragStart={handleDragStart}
-             onDragOver={handleDragOver}
-             onDragLeave={handleDragLeave}
-             onDrop={handleDrop}>
+            {...props}
+            ref={folderEl}
+            draggable={true}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}>
             {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton

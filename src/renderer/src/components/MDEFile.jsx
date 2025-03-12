@@ -27,6 +27,24 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
             path: fullPath
         }));
         e.dataTransfer.effectAllowed = "move";
+        e.dataTransfer.dropEffect = "move";
+        // Set data-is-dragging attribute
+        e.currentTarget.setAttribute("data-is-dragging", "true");
+        // Add dragend event listener to remove the attribute and handle drop to workspace root
+        const handleDragEnd = async (e) => {
+            e.currentTarget.removeAttribute("data-is-dragging");
+            e.currentTarget.removeEventListener("dragend", handleDragEnd);
+
+            // If dropped outside any valid drop target, move to workspace root
+            if (e.dataTransfer.dropEffect === "none") {
+                const workspaceRoot = dirPath.split("\\")[0];
+                const result = await window.explorer.moveFileOrFolder(fullPath, workspaceRoot);
+                if (!result.success) {
+                    logger.warn("Move to workspace root failed:", result.error);
+                }
+            }
+        };
+        e.currentTarget.addEventListener("dragend", handleDragEnd);
         // Prevent browser default drag behavior
         e.stopPropagation();
     };
@@ -86,6 +104,7 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
             if (!result.success) {
                 logger.warn("Move failed:", result.error);
             }
+            
         } catch (error) {
             logger.error("Error handling drag and drop operation:", error);
         }
@@ -93,12 +112,12 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
 
     return (
         <div className={`mde-file ${isDragOver ? "drag-over" : ""}`}
-             {...props}
-             draggable={true}
-             onDragStart={handleDragStart}
-             onDragOver={handleDragOver}
-             onDragLeave={handleDragLeave}
-             onDrop={handleDrop}>
+            {...props}
+            draggable={true}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}>
             {showTwigs && <IconLoader name="twig" className="twig"/>}
             {showTwigs && <div className="trunk"></div>}
             <MDEButton icon={<IconLoader name="file"/>} text={name}/>

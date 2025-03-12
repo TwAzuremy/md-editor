@@ -102,8 +102,31 @@ function MDEFileManager() {
                 type={"text"}
                 placeholder={"Search Files"}
                 icon={<IconLoader name={"search"}/>}/>
-            <MDEPopover direction={"right"} nearEdge={"top"}>
-                <div className={"workspace"} slot={"default"}>
+            <MDEPopover direction={"right"} nearEdge={"top"}>                
+                <div className={"workspace"} slot={"default"}
+                    onDragOver={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        e.dataTransfer.dropEffect = "move";
+                    }}
+                    onDrop={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        try {
+                            const sourcePath = e.dataTransfer.getData("text/plain");
+                            const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
+                            
+                            if (currentWorkspace.path) {
+                                const result = await window.explorer.moveFileOrFolder(sourcePath, currentWorkspace.path);
+                                if (!result.success) {
+                                    logger.warn("Move to workspace root failed:", result.error);
+                                }
+                            }
+                        } catch (error) {
+                            logger.error("Error handling drag and drop operation:", error);
+                        }
+                    }}>
                     <p className={"workspace__name"}>{currentWorkspace.name}</p>
                     <IconLoader name={"chevron-right"}/>
                 </div>

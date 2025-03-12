@@ -25,6 +25,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     const dirPathRef = useRef(dirPath);
 
     const [fileList, setFileList] = useState([]);
+    const [isDragOver, setIsDragOver] = useState(false);
 
     const {setTemp} = useTemp();
 
@@ -107,7 +108,35 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     }));
 
     return (
-        <div className="mde-explorer">
+        <div className={`mde-explorer ${isDragOver ? "drag-over" : ""}`}
+            onDragOver={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                e.dataTransfer.dropEffect = "move";
+                setIsDragOver(true);
+            }}
+            onDragLeave={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver(false);
+            }}
+            onDrop={async (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsDragOver(false);
+
+                try {
+                    const sourcePath = e.dataTransfer.getData("text/plain");
+                    if (dirPath) {
+                        const result = await window.explorer.moveFileOrFolder(sourcePath, dirPath);
+                        if (!result.success) {
+                            logger.warn("Move to workspace root failed:", result.error);
+                        }
+                    }
+                } catch (error) {
+                    logger.error("Error handling drag and drop operation:", error);
+                }
+            }}>
             {fileList.map((file, index) => renderFileItem(file, index))}
         </div>
     );

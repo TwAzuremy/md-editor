@@ -1,26 +1,29 @@
 .mde-file {
-    --mde-file-twigs-spacing: 4px;
-
     position: relative;
 
-    .mde-button {
+    &[data-is-dragging="true"] {
+        opacity: 0.5;
+    }
+
+    &.drag-over {
+        > .mde-button {
+            --mde-button-background: var(--ui-color-background-folder);
+        }
+    }
+
+    > .mde-button {
         --mde-button-color: var(--ui-color-text-primary);
-        --mde-button-hover-color: var(--ui-color-background-file);
+        --mde-button-hover-color: var(--ui-color-background-folder);
+        --mde-button-active-color: var(--ui-color-background-folder);
         --mde-button-hover-amplitude: 1.02;
         --mde-button-active-amplitude: 0.99;
 
-        &__text {
+        .mde-button__text {
             white-space: nowrap;
         }
 
         &:hover {
-            --mde-button-background: var(--ui-color-background-file);
-        }
-    }
-
-    &:has(+&, +.mde-folder) {
-        > .trunk {
-            display: block;
+            --mde-button-background: var(--ui-color-background-folder);
         }
     }
 
@@ -31,7 +34,7 @@
 
         position: absolute;
         top: 0;
-        right: calc(100% + 4px);
+        right: calc(100% + var(--mde-folder-twigs-spacing));
     }
 
     .trunk {
@@ -39,25 +42,17 @@
 
         position: absolute;
         top: var(--mde-explorer-tweaks-trunk-top);
-        right: calc(100% + var(--size-svg-normal) + 4px - var(--mde-explorer-tweaks-trunk-right));
-        width: var(--mde-explorer-tweaks-trunk-width);
-        background: var(--ui-color-twigs);
-        height: calc(100% + 4px);
-        border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
+        right: calc(100% + var(--mde-folder-twigs-spacing) + var(--size-svg-normal) / 2);
+
+        width: 1px;
+        height: calc(100% + var(--mde-folder-spacing));
+
+        background-color: var(--ui-color-twigs);
     }
 
     &:has(+.mde-file, +.mde-folder) {
         > .trunk {
             display: block;
         }
-    }
-
-    /* Add drag style */
-    &:active {
-        opacity: 0.7;
-    }
-
-    &[draggable=true] {
-        cursor: move;
     }
 }

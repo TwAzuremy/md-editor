@@ -22,12 +22,12 @@ const MDEExplorerController = memo(({
         },
         {
             icon: <IconLoader name={"file-plus"}/>,
-            tip: "New File",
+            tip: "New Markdown File",
             onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), true)
         },
         {
             icon: <IconLoader name={"refresh"}/>,
-            tip: "Refresh",
+            tip: "Refresh Workspace",
             onClick: onRefresh
         },
         {

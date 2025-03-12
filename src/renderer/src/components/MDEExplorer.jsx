@@ -29,9 +29,9 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     const {setTemp} = useTemp();
 
-    const readDirectory = useCallback(async (path) => {
+    const readDirectory = async (path) => {
         return await window.explorer.readDirectory(path, false);
-    }, []);
+    };
 
     useEffect(() => {
         if (!dirPath) {
@@ -63,6 +63,38 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
 
         dirPathRef.current = dirPath;
+
+        let watcher;
+
+        const startWatching = async () => {
+            try {
+                if (!dirPath) {
+                    return;
+                }
+
+                watcher = await window.explorer.watchFolder(dirPath);
+                window.explorer.onWatchUpdate(({watcherId: id}) => {
+                    if (id === watcher.id) {
+                        readDirectory();
+                    }
+                });
+            } catch (error) {
+                logger.error("[Explorer] watch failed: ", error);
+            }
+        };
+
+        startWatching();
+
+        return () => {
+            if (watcher) {
+                window.explorer.unwatchFolder(watcher);
+                window.explorer.removeWatchListeners(({watcherId: id}) => {
+                    if (id === watcher.id) {
+                        readDirectory();
+                    }
+                });
+            }
+        };
     }, [dirPath]);
 
     const renderFileItem = useCallback((file, index) => {
@@ -109,34 +141,34 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
 
     return (
         <div className={`mde-explorer ${isDragOver ? "drag-over" : ""}`}
-            onDragOver={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                e.dataTransfer.dropEffect = "move";
-                setIsDragOver(true);
-            }}
-            onDragLeave={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsDragOver(false);
-            }}
-            onDrop={async (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsDragOver(false);
+             onDragOver={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 e.dataTransfer.dropEffect = "move";
+                 setIsDragOver(true);
+             }}
+             onDragLeave={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 setIsDragOver(false);
+             }}
+             onDrop={async (e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 setIsDragOver(false);
 
-                try {
-                    const sourcePath = e.dataTransfer.getData("text/plain");
-                    if (dirPath) {
-                        const result = await window.explorer.moveFileOrFolder(sourcePath, dirPath);
-                        if (!result.success) {
-                            logger.warn("Move to workspace root failed:", result.error);
-                        }
-                    }
-                } catch (error) {
-                    logger.error("Error handling drag and drop operation:", error);
-                }
-            }}>
+                 try {
+                     const sourcePath = e.dataTransfer.getData("text/plain");
+                     if (dirPath) {
+                         const result = await window.explorer.moveFileOrFolder(sourcePath, dirPath);
+                         if (!result.success) {
+                             logger.warn("Move to workspace root failed:", result.error);
+                         }
+                     }
+                 } catch (error) {
+                     logger.error("Error handling drag and drop operation:", error);
+                 }
+             }}>
             {fileList.map((file, index) => renderFileItem(file, index))}
         </div>
     );

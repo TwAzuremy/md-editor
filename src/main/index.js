@@ -196,28 +196,101 @@ function createWindow() {
     // Handle file/folder move operation
     ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
         if (!sourcePath || !destinationPath) {
-            return { success: false, error: "Invalid paths provided" };
+            return { success: false, error: "无效的路径" };
         }
 
         try {
-            // Get the base name of the source
-            const baseName = path.basename(sourcePath);
-            // Create the full destination path including the file/folder name
-            const fullDestPath = path.join(destinationPath, baseName);
-            
-            // Check if destination already exists
-            if (fs.existsSync(fullDestPath)) {
-                return { success: false, error: "Destination already exists" };
+            // 检查源路径是否存在
+            if (!fs.existsSync(sourcePath)) {
+                return { success: false, error: "源文件或文件夹不存在" };
+            }
+
+            // 检查源路径和目标路径是否相同
+            if (path.resolve(sourcePath) === path.resolve(destinationPath)) {
+                return { success: false, error: "源路径和目标路径相同" };
+            }
+
+            // 检查目标路径是否是文件
+            if (fs.existsSync(destinationPath) && !fs.statSync(destinationPath).isDirectory()) {
+                return { success: false, error: "目标路径不是一个目录" };
+            }
+
+            // 确保目标目录存在
+            if (!fs.existsSync(destinationPath)) {
+                fs.mkdirSync(destinationPath, { recursive: true });
             }
             
-            // Move the file/folder
-            fs.renameSync(sourcePath, fullDestPath);
+            // 获取源文件/文件夹的基本名称
+            const baseName = path.basename(sourcePath);
+            // 创建包含文件/文件夹名称的完整目标路径
+            const fullDestPath = path.join(destinationPath, baseName);
             
-            return { success: true, newPath: fullDestPath };
+            // 检查目标是否已存在，如果存在则生成一个新名称
+            let finalDestPath = fullDestPath;
+            if (fs.existsSync(fullDestPath)) {
+                // 生成一个新的不冲突的文件名
+                const ext = path.extname(baseName);
+                const nameWithoutExt = path.basename(baseName, ext);
+                let counter = 1;
+                
+                do {
+                    const newName = `${nameWithoutExt} (${counter})${ext}`;
+                    finalDestPath = path.join(destinationPath, newName);
+                    counter++;
+                } while (fs.existsSync(finalDestPath));
+            }
+            
+            // 尝试移动文件/文件夹
+            try {
+                // 首先尝试直接移动
+                fs.renameSync(sourcePath, finalDestPath);
+            } catch (moveError) {
+                // 如果直接移动失败，尝试复制然后删除的方法
+                if (fs.statSync(sourcePath).isDirectory()) {
+                    // 对于目录，使用递归复制
+                    fs.mkdirSync(finalDestPath, { recursive: true });
+                    copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
+                    fs.rmSync(sourcePath, { recursive: true, force: true });
+                } else {
+                    // 对于文件，使用简单复制
+                    fs.copyFileSync(sourcePath, finalDestPath);
+                    fs.unlinkSync(sourcePath);
+                }
+            }
+            
+            return { success: true, newPath: finalDestPath };
         } catch (error) {
+            console.error("文件移动错误:", error);
             return { success: false, error: error.message };
         }
     });
+    
+    /**
+     * Recursively copies a folder
+     * @param {string} source - Source folder path
+     * @param {string} target - Target folder path
+     */
+    function copyFolderRecursiveSync(source, target) {
+        const targetFolder = path.join(target, path.basename(source));
+        
+        // Create target folder if it doesn't exist
+        if (!fs.existsSync(targetFolder)) {
+            fs.mkdirSync(targetFolder, { recursive: true });
+        }
+        
+        // Copy all files and subfolders
+        if (fs.lstatSync(source).isDirectory()) {
+            const files = fs.readdirSync(source);
+            files.forEach(file => {
+                const curSource = path.join(source, file);
+                if (fs.lstatSync(curSource).isDirectory()) {
+                    copyFolderRecursiveSync(curSource, targetFolder);
+                } else {
+                    fs.copyFileSync(curSource, path.join(targetFolder, file));
+                }
+            });
+        }
+    }
 }
 
 /**

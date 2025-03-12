@@ -18,93 +18,81 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
     const [isDragOver, setIsDragOver] = useState(false);
 
-    // 处理拖拽开始事件
+    // Handle drag start event
     const handleDragStart = (e) => {
         console.log('MDEFile - handleDragStart', fullPath);
-        // 设置拖拽数据
+        // Set drag data
         e.dataTransfer.setData("text/plain", fullPath);
         e.dataTransfer.setData("application/json", JSON.stringify({
             type: "file",
             path: fullPath
         }));
         e.dataTransfer.effectAllowed = "move";
+        // Prevent browser default drag behavior
+        e.stopPropagation()
     };
 
-    // 处理拖拽经过事件
+    // Handle drag over event
     const handleDragOver = (e) => {
         e.preventDefault();
         e.stopPropagation();
 
-        // 设置拖拽效果
+        // Set drag effect
         e.dataTransfer.dropEffect = "move";
         setIsDragOver(true);
     };
 
-    // 处理拖拽离开事件
+    // Handle drag leave event
     const handleDragLeave = (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
     };
 
-    // 处理放置事件
+    // Handle drop event
     const handleDrop = async (e) => {
         e.preventDefault();
         e.stopPropagation();
         setIsDragOver(false);
 
         try {
-            // 获取源路径和类型
+            // Get source path and type
             const sourcePath = e.dataTransfer.getData("text/plain");
             const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
             console.log('MDEFile - handleDrop', 'source:', sourcePath, 'target dir:', dirPath);
 
-            // 如果源与目标相同，则不执行操作
-            // if (sourcePath === fullPath) {
-            //     console.log('MDEFile - handleDrop - 源与目标相同，取消操作');
-            //     return;
-            // }
+            // If source and target are the same, do not perform operation
+            if (sourcePath === fullPath) {
+                console.log('MDEFile - handleDrop - 源与目标相同，取消操作');
+                return;
+            }
 
-            // 获取目标路径（文件所在的目录）
+            // Get target path (directory where the file is located)
             const targetDir = dirPath;
 
-            // 调用移动文件或文件夹的函数
-            console.log('MDEFile - 调用moveFileOrFolder', sourcePath, targetDir);
-            // 路径校验防止循环移动
-            if (sourceData.path.startsWith(targetDir)) {
-                console.error('不能移动到自身子目录');
+            // Path validation to prevent circular movement
+            if (sourceData.type === "directory" && targetDir.startsWith(sourcePath + "\\")) {
+                console.error('Cannot move to its own subdirectory');
                 return;
             }
 
-            // 创建临时目录路径
-            if (!window.path || !window.path.join) {
-  console.error('path module not available');
-  return;
-}
-const tempDir = await window.path.join(await window.os.tmpdir(), 'mde_temp_move');
+            // Only output debug information, do not perform actual move operation
+            console.log('MDEFile - 拖拽调试信息', '源路径:', sourcePath, '目标路径:', targetDir);
             
-            // 第一阶段：移动到临时目录
-            const tempResult = await window.explorer.moveFileOrFolder(sourcePath, tempDir);
-            if (!tempResult.success) {
-                console.error('临时移动失败:', tempResult.error);
-                return;
-            }
-
-            // 第二阶段：从临时目录移动到目标位置
-            const tempPath = await window.path.join(tempDir, await window.path.basename(sourcePath));
-            const finalResult = await window.explorer.moveFileOrFolder(tempPath, targetDir);
-            console.log('MDEFile - moveFileOrFolder结果', finalResult);
-
-            if (finalResult.success) {
-                // 通知父组件刷新文件列表
-                window.dispatchEvent(new CustomEvent('refresh-explorer'));
-            } else {
-                // 回滚操作：将文件移回原位置
-                await window.explorer.moveFileOrFolder(tempPath, await window.path.dirname(sourcePath));
-                console.error("最终移动失败:", finalResult.error);
-            }
+            // Commented out actual move operation
+            // const result = await window.explorer.moveFileOrFolder(sourcePath, targetDir);
+            // console.log('MDEFile - moveFileOrFolder结果', result);
+            // 
+            // if (!result.success) {
+            //     console.error('Move failed:', result.error);
+            //     // Here you can add user interface prompts, such as using a toast component
+            //     return;
+            // }
+            
+            // No longer trigger refresh event
+            // window.dispatchEvent(new CustomEvent('refresh-explorer'));
         } catch (error) {
-            console.error("处理拖放操作时出错:", error);
+            console.error("Error handling drag and drop operation:", error);
         }
     };
 

@@ -2,9 +2,9 @@ import "@components/css/mde-file.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
-import { memo, useMemo, useState } from "react";
-import { dragEnd } from "@utils/Listener.js";
-import { handleDragLeave, handleDragOver, handleDrop } from "@utils/DragDropHandler.js";
+import {memo, useMemo, useState} from "react";
+import {dragEnd} from "@utils/Listener.js";
+import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
  * File component, used to display directory items
@@ -15,7 +15,7 @@ import { handleDragLeave, handleDragOver, handleDrop } from "@utils/DragDropHand
  * @param {boolean} [props.showTwigs=true] show Twigs or not
  * @returns {React.ReactElement} rendered element
  */
-const MDEFile = memo(({ dirPath, name, showTwigs = true, ...props }) => {
+const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
     const [isDragOver, setIsDragOver] = useState(false);
 
@@ -35,17 +35,18 @@ const MDEFile = memo(({ dirPath, name, showTwigs = true, ...props }) => {
 
     return (
         <div className={`mde-file`}
-            {...props}>
-            {showTwigs && <IconLoader name="twig" className="twig" />}
+             {...props}>
+            {showTwigs && <IconLoader name="twig" className="twig"/>}
             {showTwigs && <div className="trunk"></div>}
             <MDEButton
                 className={`${isDragOver ? "drag-over" : ""}`}
-                icon={<IconLoader name="file" />}
+                icon={<IconLoader name="file"/>}
                 text={name}
                 draggable={true}
+                onDragStart={handleDragStart}
                 onDragOver={(e) => handleDragOver(e, setIsDragOver)}
                 onDragLeave={(e) => handleDragLeave(e, setIsDragOver)}
-                onDrop={(e) => handleDrop(e, dirPath, setIsDragOver)} />
+                onDrop={(e) => handleDrop(e, dirPath, setIsDragOver)}/>
         </div>
     );
 });

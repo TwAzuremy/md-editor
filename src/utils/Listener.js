@@ -13,7 +13,6 @@ export const dragEnd = (event, dirPath, fullPath) => {
         // If dropped outside any valid drop target, move to workspace root
         if (e.dataTransfer.dropEffect === "none") {
             const workspaceRoot = dirPath.split("\\")[0];
-            const sourcePath = e.dataTransfer.getData("text/plain");
             const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
 
             const validation = validateDragDrop(fullPath, workspaceRoot, sourceData);
@@ -34,4 +33,4 @@ export const dragEnd = (event, dirPath, fullPath) => {
     event.currentTarget.addEventListener("dragend", handleDragEnd);
     // Prevent browser default drag behavior
     event.stopPropagation();
-}
+};

@@ -123,15 +123,17 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     }
 
     async function createFile(dirPath = void 0, isFile = false) {
-        const isSuccess = await window.explorer.createFile(
-            // TODO [BUG] When "dirPath" is empty, it does not switch to "dirPathRef.current", which is the path to the workspace.
-            dirPath || dirPathRef.current,
-            isFile ? "New File.md" : "New Folder",
-            isFile
-        );
+        const filename = isFile ? "New File.md" : "New Folder";
 
-        if (isSuccess) {
-            logger.info("[Explorer] File created successfully: " + isSuccess);
+        let isSuccess = await window.explorer.createFile(dirPath || dirPathRef.current, filename, isFile);
+
+        // If the path does not exist, create a new one in the workspace.
+        if (isSuccess.code === 404) {
+            isSuccess = await window.explorer.createFile(dirPathRef.current, filename, isFile);
+        }
+
+        if (isSuccess.success) {
+            logger.info("[Explorer] File created successfully: " + isSuccess?.path);
         }
     }
 

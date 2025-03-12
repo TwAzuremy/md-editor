@@ -189,7 +189,10 @@ ipcMain.handle("open-in-system-explorer", async (_, dirPath) => {
 ipcMain.handle("create-file", async (_, dirPath, name, isFile = false) => {
     // Check whether the destination directory exists
     if (!checkFileIsExist(dirPath)) {
-        return false;
+        return {
+            code: 404,
+            success: false
+        };
     }
 
     const uniqueName = generateUniqueFilename(dirPath, name, isFile);
@@ -208,9 +211,17 @@ ipcMain.handle("create-file", async (_, dirPath, name, isFile = false) => {
             // Create with non-recursive (make sure the parent directory is not created automatically)
             fs.mkdirSync(fullPath);
         }
-        return fullPath;
+
+        return {
+            code: 200,
+            success: true,
+            path: fullPath
+        };
     } catch (error) {
-        return false;
+        return {
+            code: 500,
+            success: false
+        };
     }
 });
 

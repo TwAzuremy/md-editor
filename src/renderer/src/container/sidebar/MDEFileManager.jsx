@@ -154,7 +154,8 @@ function MDEFileManager() {
                 <MDEExplorer dirPath={currentWorkspace?.path} ref={explorerRef}/>
                 <MDEExplorerController
                     dirPath={currentWorkspace?.path}
-                    onRefresh={explorerRef.current?.refresh}/>
+                    onRefresh={explorerRef.current?.refresh}
+                    onCreateFile={explorerRef.current?.createFile}/>
             </TempProvider>
         </div>
     );

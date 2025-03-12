@@ -58,7 +58,8 @@ contextBridge.exposeInMainWorld("explorer", {
              * @param {boolean} showHiddenFiles
              * @returns {Promise<[{name: string, type: string}]>}
              */
-            readDirectory: (dirPath, showHiddenFiles = false) => ipcRenderer.invoke("read-directory", dirPath, showHiddenFiles),
+            readDirectory: (dirPath, showHiddenFiles = false) =>
+                ipcRenderer.invoke("read-directory", dirPath, showHiddenFiles),
             /**
              * Open a directory dialog.
              *
@@ -79,7 +80,25 @@ contextBridge.exposeInMainWorld("explorer", {
              * @param {string} destinationPath - Destination directory path.
              * @returns {Promise<{success: boolean, newPath?: string, error?: string}>}
              */
-            moveFileOrFolder: (sourcePath, destinationPath) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath)
+            moveFileOrFolder: (sourcePath, destinationPath) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath),
+            /**
+             * Create a file or folder.
+             *
+             * @param {string|null} dirPath - Path to the directory to create the file or folder in.
+             * @param {string} name - Name of the file or folder to create.
+             * @param {boolean} [isFile=false] - If true, create a file; otherwise, create a folder.
+             * @returns {Promise<boolean>} - A promise that resolves to true if the file or folder was created successfully.
+             */
+            createFile: (dirPath, name, isFile = false) =>
+                ipcRenderer.invoke("create-file", dirPath, name, isFile),
+            watchFolder: (dirPath) => ipcRenderer.invoke("watch-folder", dirPath),
+            unwatchFolder: (watcherId) => ipcRenderer.invoke("unwatch-folder", watcherId),
+            onWatchUpdate: (callback) => {
+                ipcRenderer.on("watch-folder-update", (_, data) => callback(data));
+            },
+            removeWatchListeners: (callback) => {
+                ipcRenderer.removeListener("watch-folder-update", (_, data) => callback(data));
+            }
         });
 
         // noinspection JSUnresolvedReference

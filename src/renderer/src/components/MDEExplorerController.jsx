@@ -4,21 +4,26 @@ import {memo} from "react";
 import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDETooltip from "@components/MDETooltip.jsx";
+import {useTemp} from "@renderer/provider/TempProvider.jsx";
+import ElectronStore from "@utils/ElectronStore.js";
 
 const MDEExplorerController = memo(({
                                         dirPath = null,
-                                        onRefresh = null
+                                        onRefresh = null,
+                                        onCreateFile = null
                                     }) => {
+    const {getTemp} = useTemp();
+
     const EXPLORER_CONTROLLER = [
         {
             icon: <IconLoader name={"folder-plus"}/>,
             tip: "New Folder",
-            onClick: null
+            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), false)
         },
         {
             icon: <IconLoader name={"file-plus"}/>,
             tip: "New File",
-            onClick: null
+            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), true)
         },
         {
             icon: <IconLoader name={"refresh"}/>,

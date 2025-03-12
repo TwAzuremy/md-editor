@@ -8,9 +8,11 @@ import icon from "../../resources/icons/icon.png?asset";
 import * as path from "node:path";
 
 const fs = require("fs");
+const chokidar = require("chokidar");
 
 let mainWindow;
 const store = new Store();
+const watchers = new Map();
 
 function createWindow() {
     // Get the window bounds from the store or set default values
@@ -95,105 +97,142 @@ function createWindow() {
     // Save window bounds
     mainWindow.on("resize", saveWindowBounds);
     mainWindow.on("move", saveWindowBounds);
+}
 
-    ipcMain.handle("electron-store", (_, operation, key, value) => {
-        switch (operation) {
-            case "get":
-                // noinspection JSUnresolvedReference
-                return store.get(key);
-            case "set":
-                // noinspection JSUnresolvedReference
-                store.set(key, value);
-                return true;
-            case "del":
-                // noinspection JSUnresolvedReference
-                store.delete(key);
-                return true;
-            case "clr":
-                // noinspection JSUnresolvedReference
-                store.clear();
-                return true;
-        }
-    });
-
-    ipcMain.handle("check-path-exists", (_, dirPath) => {
-        if (!dirPath) {
-            return false;
-        }
-
-        try {
-            return fs.existsSync(dirPath);
-        } catch (error) {
-            return false;
-        }
-    });
-
-    ipcMain.handle("read-directory", async (_, dirPath, showHiddenFiles = false) => {
-        try {
-            const directs = fs.readdirSync(dirPath, {withFileTypes: true});
-
-            return directs
-                .filter(dirent => {
-                    const isDirOrFile = dirent.isDirectory() || dirent.isFile();
-                    if (!isDirOrFile) return false;
-
-                    return showHiddenFiles || !checkFileIsHidden(dirPath, dirent.name);
-                })
-                .map(dirent => ({
-                    name: dirent.name,
-                    type: dirent.isDirectory() ? "directory" : "file"
-                }))
-                .sort((a, b) => {
-                    // Sort by type: folders first
-                    if (a.type !== b.type) {
-                        return a.type === "directory" ? -1 : 1;
-                    }
-
-                    // If the type is the same, sort by name
-                    return a.name.localeCompare(
-                        b.name, void 0,
-                        // Turn on natural sorting of numbers, regardless of case sensitivity
-                        {
-                            numeric: true,
-                            sensitivity: "base"
-                        }
-                    );
-                });
-        } catch (error) {
-            return null;
-        }
-    });
-
-    ipcMain.handle("open-directory-dialog", async () => {
-        const result = await dialog.showOpenDialog({
-            properties: ["openDirectory"]
-        });
-
-        if (!result.canceled && result.filePaths.length > 0) {
-            const fullPath = result.filePaths[0];
-
-            return {
-                path: fullPath,
-                name: path.basename(fullPath)
-            };
-        }
-    });
-
-    ipcMain.handle("open-in-system-explorer", async (_, dirPath) => {
-        if (!dirPath) {
-            return false;
-        }
-
-        try {
-            await shell.openPath(dirPath);
-
+ipcMain.handle("electron-store", (_, operation, key, value) => {
+    switch (operation) {
+        case "get":
+            // noinspection JSUnresolvedReference
+            return store.get(key);
+        case "set":
+            // noinspection JSUnresolvedReference
+            store.set(key, value);
             return true;
-        } catch (error) {
-            return false;
-        }
+        case "del":
+            // noinspection JSUnresolvedReference
+            store.delete(key);
+            return true;
+        case "clr":
+            // noinspection JSUnresolvedReference
+            store.clear();
+            return true;
+    }
+});
+
+ipcMain.handle("check-path-exists", (_, dirPath) => checkFileIsExist(dirPath));
+
+ipcMain.handle("read-directory", async (_, dirPath, showHiddenFiles = false) => {
+    try {
+        const directs = fs.readdirSync(dirPath, {withFileTypes: true});
+
+        return directs
+            .filter(dirent => {
+                const isDirOrFile = dirent.isDirectory() || dirent.isFile();
+                if (!isDirOrFile) return false;
+
+                return showHiddenFiles || !checkFileIsHidden(dirPath, dirent.name);
+            })
+            .map(dirent => ({
+                name: dirent.name,
+                type: dirent.isDirectory() ? "directory" : "file"
+            }))
+            .sort((a, b) => {
+                // Sort by type: folders first
+                if (a.type !== b.type) {
+                    return a.type === "directory" ? -1 : 1;
+                }
+
+                // If the type is the same, sort by name
+                return a.name.localeCompare(
+                    b.name, void 0,
+                    // Turn on natural sorting of numbers, regardless of case sensitivity
+                    {
+                        numeric: true,
+                        sensitivity: "base"
+                    }
+                );
+            });
+    } catch (error) {
+        return null;
+    }
+});
+
+ipcMain.handle("open-directory-dialog", async () => {
+    const result = await dialog.showOpenDialog({
+        properties: ["openDirectory"]
     });
-    
-    // Handle file/folder move operation
+
+    if (!result.canceled && result.filePaths.length > 0) {
+        const fullPath = result.filePaths[0];
+
+        return {
+            path: fullPath,
+            name: path.basename(fullPath)
+        };
+    }
+});
+
+ipcMain.handle("open-in-system-explorer", async (_, dirPath) => {
+    if (!dirPath) {
+        return false;
+    }
+
+    try {
+        await shell.openPath(dirPath);
+
+        return true;
+    } catch (error) {
+        return false;
+    }
+});
+
+ipcMain.handle("create-file", async (_, dirPath, name, isFile = false) => {
+    const uniqueName = generateUniqueFilename(dirPath, name, isFile);
+    const fullPath = join(dirPath, uniqueName);
+
+    if (isFile) {
+        const parentDir = path.dirname(fullPath);
+        fs.mkdirSync(parentDir, {recursive: true});
+        fs.writeFileSync(fullPath, "");
+    } else {
+        fs.mkdirSync(fullPath, {recursive: true});
+    }
+
+    return fullPath;
+});
+
+ipcMain.handle("watch-folder", async (_, dirPath) => {
+    // Generate a unique watcher ID
+    const watcherId = `${dirPath}-${Date.now()}`;
+
+    const watcher = chokidar.watch(dirPath, {
+        persistent: true,
+        ignoreInitial: true,
+        cwd: ".",
+        depth: 0
+    });
+  
+    watchers.set(watcherId, watcher);
+
+    watcher.on("all", (event, path) => {
+        BrowserWindow.getAllWindows()[0].webContents.send("watch-folder-update", {
+            watcherId, event, path
+        });
+    });
+
+    return watcherId;
+});
+
+ipcMain.handle("unwatch-folder", async (_, watcherId) => {
+    const watcher = watchers.get(watcherId);
+
+    if (watcher) {
+        watcher.close();
+        watchers.delete(watcherId);
+    }
+});
+
+// Handle file/folder move operation
     ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
         if (!sourcePath || !destinationPath) {
             return { success: false, error: "无效的路径" };
@@ -307,7 +346,7 @@ function saveWindowBounds() {
 
         // Store the bounds in the store
         // noinspection JSUnresolvedReference
-        store.set("md-editor.windowBounds", bounds);
+        store.set("md-editor.window-bounds", bounds);
     }
 }
 
@@ -385,4 +424,46 @@ function checkFileIsHidden(dirPath, filename) {
     const attributes = fswin.getAttributesSync(join(dirPath, filename));
 
     return attributes.IS_HIDDEN;
+}
+
+/**
+ * Checks if a file or directory exists at the given path.
+ *
+ * @function checkFileIsExist
+ *
+ * @param {string} dirPath - The path to the file or directory.
+ *
+ * @returns {boolean} Returns `true` if the file or directory exists, otherwise `false`.
+ *
+ * @example
+ * console.log(checkFileIsExist("\\path\\to\\existing\\file"));  // true
+ * console.log(checkFileIsExist("\\path\\to\\nonexistent\\file"));  // false
+ */
+function checkFileIsExist(dirPath) {
+    if (!dirPath) {
+        return false;
+    }
+
+    try {
+        return fs.existsSync(dirPath);
+    } catch (error) {
+        return false;
+    }
+}
+
+function generateUniqueFilename(dirPath, filename, isFile = false) {
+    let counter = 0;
+    let parsed = path.parse(filename);
+
+    while (true) {
+        const suffix = counter ? ` (${counter})` : "";
+        const name = isFile ? `${parsed.name}${suffix}${parsed.ext}` : `${parsed.name}${suffix}`;
+
+        const targetPath = join(dirPath, name);
+        if (!checkFileIsExist(targetPath)) {
+            return name;
+        }
+
+        counter++;
+    }
 }

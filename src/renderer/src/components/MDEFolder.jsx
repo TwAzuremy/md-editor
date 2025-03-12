@@ -122,16 +122,9 @@ const MDEFolder = memo(({
             // Get source directory path
             const sourceDir = sourcePath.substring(0, sourcePath.lastIndexOf('\\'));
             
-            // Check if target is a parent directory of the source
-            // This prevents creating duplicates when dragging to any ancestor directory
-            if (sourcePath.startsWith(fullPath + '\\') || sourceDir === fullPath) {
-                console.log('MDEFolder - handleDrop - Target is a parent directory of the source, operation cancelled');
-                return;
-            }
-            
-            // If source directory is the same as target directory, cancel operation
-            if (sourceDir === dirPath) {
-                console.log('MDEFolder - handleDrop - Source and target directory are the same, operation cancelled');
+            // If source path and target path are the same, cancel operation
+            if (sourceDir === fullPath) {
+                console.log('MDEFolder - handleDrop - Source and target are the same, operation cancelled');
                 return;
             }
             

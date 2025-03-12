@@ -106,17 +106,17 @@ const MDEFolder = memo(({
             // call the moveFileOrFolder function
             console.log('MDEFolder - 调用moveFileOrFolder', sourcePath, fullPath);
             // 路径校验防止循环移动
-            if (sourceData.path.startsWith(fullPath)) {
-                console.error('不能移动到自身子目录');
-                return;
-            }
+            // if (sourceData.path.startsWith(fullPath)) {
+            //     console.error('不能移动到自身子目录');
+            //     return;
+            // }
 
             // 创建临时目录路径
             if (!window.path || !window.path.join) {
-  console.error('path module not available');
-  return;
-}
-const tempDir = await window.path.join(await window.os.tmpdir(), 'mde_temp_move');
+                console.error('path module not available');
+                return;
+            }
+            const tempDir = await window.path.join(await window.os.tmpdir(), 'mde_temp_move');
             
             // 第一阶段：移动到临时目录
             const tempResult = await window.explorer.moveFileOrFolder(sourcePath, tempDir);

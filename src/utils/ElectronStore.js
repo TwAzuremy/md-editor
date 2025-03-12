@@ -4,7 +4,9 @@ class ElectronStore {
     static PRIMARY_KEY = "md-editor";
     static KEY_WORKSPACE = ElectronStore.PRIMARY_KEY + ".workspace";
     static KEY_WORKSPACE_RECENT = ElectronStore.PRIMARY_KEY + ".workspace-recent";
-    static KEY_TAGGED_FOLDER = ElectronStore.PRIMARY_KEY + ".tagged-folder";
+
+    // Temporarily stored keys
+    static KEY_TAGGED_FOLDER = "tagged-folder";
 
     /**
      * Retrieves a value from the store by key.

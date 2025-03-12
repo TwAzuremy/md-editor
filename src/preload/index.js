@@ -30,20 +30,7 @@ if (process.contextIsolated) {
             isMaximized: () => ipcRenderer.invoke("window-is-maximized")
         });
 
-        const path = require('path');
-const os = require('os');
-
-contextBridge.exposeInMainWorld('path', {
-  join: (...args) => path.join(...args),
-  basename: (...args) => path.basename(...args),
-  dirname: (...args) => path.dirname(...args)
-});
-
-contextBridge.exposeInMainWorld('os', {
-  tmpdir: () => os.tmpdir()
-});
-
-contextBridge.exposeInMainWorld("explorer", {
+        contextBridge.exposeInMainWorld("explorer", {
             /**
              * Check if a directory exists.
              *
@@ -65,7 +52,7 @@ contextBridge.exposeInMainWorld("explorer", {
              *
              * @returns {Promise<{path: string, name: string}>}
              */
-            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),        
+            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),
             /**
              * Open a directory in the system's file explorer.
              *

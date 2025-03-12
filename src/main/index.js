@@ -187,18 +187,31 @@ ipcMain.handle("open-in-system-explorer", async (_, dirPath) => {
 });
 
 ipcMain.handle("create-file", async (_, dirPath, name, isFile = false) => {
-    const uniqueName = generateUniqueFilename(dirPath, name, isFile);
-    const fullPath = join(dirPath, uniqueName);
-
-    if (isFile) {
-        const parentDir = path.dirname(fullPath);
-        fs.mkdirSync(parentDir, {recursive: true});
-        fs.writeFileSync(fullPath, "");
-    } else {
-        fs.mkdirSync(fullPath, {recursive: true});
+    // Check whether the destination directory exists
+    if (!checkFileIsExist(dirPath)) {
+        return false;
     }
 
-    return fullPath;
+    const uniqueName = generateUniqueFilename(dirPath, name, isFile);
+    const fullPath = join(dirPath, uniqueName);
+    const parentDir = path.dirname(fullPath);
+
+    // Check if the parent directory of the full path exists (handle file names with subdirectories)
+    if (!checkFileIsExist(parentDir)) {
+        throw new Error("Target path does not exist");
+    }
+
+    try {
+        if (isFile) {
+            fs.writeFileSync(fullPath, "");
+        } else {
+            // Create with non-recursive (make sure the parent directory is not created automatically)
+            fs.mkdirSync(fullPath);
+        }
+        return fullPath;
+    } catch (error) {
+        return false;
+    }
 });
 
 ipcMain.handle("watch-folder", async (_, dirPath) => {
@@ -211,7 +224,7 @@ ipcMain.handle("watch-folder", async (_, dirPath) => {
         cwd: ".",
         depth: 0
     });
-  
+
     watchers.set(watcherId, watcher);
 
     watcher.on("all", (event, path) => {
@@ -232,105 +245,57 @@ ipcMain.handle("unwatch-folder", async (_, watcherId) => {
     }
 });
 
-// Handle file/folder move operation
-    ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
-        if (!sourcePath || !destinationPath) {
-            return { success: false, error: "无效的路径" };
+ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
+    if (!sourcePath || !destinationPath) {
+        return {success: false, error: "Invalid path"};
+    }
+
+    try {
+        if (!checkFileIsExist(sourcePath)) {
+            return {success: false, error: "The source file or folder does not exist"};
         }
+
+        if (path.resolve(sourcePath) === path.resolve(destinationPath)) {
+            return {success: false, error: "The source and destination paths are the same"};
+        }
+
+        if (checkFileIsExist(destinationPath) && !fs.statSync(destinationPath).isDirectory()) {
+            return {success: false, error: "The target path is not a directory"};
+        }
+
+        if (!checkFileIsExist(destinationPath)) {
+            fs.mkdirSync(destinationPath, {recursive: true});
+        }
+
+        const baseName = path.basename(sourcePath);
+        // Create a full destination path that contains the file / folder name
+        const uniqueName = generateUniqueFilename(destinationPath, baseName, fs.statSync(sourcePath).isFile());
+        const finalDestPath = join(destinationPath, uniqueName);
 
         try {
-            // 检查源路径是否存在
-            if (!fs.existsSync(sourcePath)) {
-                return { success: false, error: "源文件或文件夹不存在" };
+            // Try moving straight first
+            fs.renameSync(sourcePath, finalDestPath);
+        } catch (moveError) {
+            // If the direct move fails, try copying and then deleting the method
+            if (fs.statSync(sourcePath).isDirectory()) {
+                // For directories, recursive replication is used
+                fs.mkdirSync(finalDestPath, {recursive: true});
+                copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
+                fs.rmSync(sourcePath, {recursive: true, force: true});
+            } else {
+                // For files, use simple copy
+                fs.copyFileSync(sourcePath, finalDestPath);
+                fs.unlinkSync(sourcePath);
             }
-
-            // 检查源路径和目标路径是否相同
-            if (path.resolve(sourcePath) === path.resolve(destinationPath)) {
-                return { success: false, error: "源路径和目标路径相同" };
-            }
-
-            // 检查目标路径是否是文件
-            if (fs.existsSync(destinationPath) && !fs.statSync(destinationPath).isDirectory()) {
-                return { success: false, error: "目标路径不是一个目录" };
-            }
-
-            // 确保目标目录存在
-            if (!fs.existsSync(destinationPath)) {
-                fs.mkdirSync(destinationPath, { recursive: true });
-            }
-            
-            // 获取源文件/文件夹的基本名称
-            const baseName = path.basename(sourcePath);
-            // 创建包含文件/文件夹名称的完整目标路径
-            const fullDestPath = path.join(destinationPath, baseName);
-            
-            // 检查目标是否已存在，如果存在则生成一个新名称
-            let finalDestPath = fullDestPath;
-            if (fs.existsSync(fullDestPath)) {
-                // 生成一个新的不冲突的文件名
-                const ext = path.extname(baseName);
-                const nameWithoutExt = path.basename(baseName, ext);
-                let counter = 1;
-                
-                do {
-                    const newName = `${nameWithoutExt} (${counter})${ext}`;
-                    finalDestPath = path.join(destinationPath, newName);
-                    counter++;
-                } while (fs.existsSync(finalDestPath));
-            }
-            
-            // 尝试移动文件/文件夹
-            try {
-                // 首先尝试直接移动
-                fs.renameSync(sourcePath, finalDestPath);
-            } catch (moveError) {
-                // 如果直接移动失败，尝试复制然后删除的方法
-                if (fs.statSync(sourcePath).isDirectory()) {
-                    // 对于目录，使用递归复制
-                    fs.mkdirSync(finalDestPath, { recursive: true });
-                    copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
-                    fs.rmSync(sourcePath, { recursive: true, force: true });
-                } else {
-                    // 对于文件，使用简单复制
-                    fs.copyFileSync(sourcePath, finalDestPath);
-                    fs.unlinkSync(sourcePath);
-                }
-            }
-            
-            return { success: true, newPath: finalDestPath };
-        } catch (error) {
-            console.error("文件移动错误:", error);
-            return { success: false, error: error.message };
         }
-    });
-    
-    /**
-     * Recursively copies a folder
-     * @param {string} source - Source folder path
-     * @param {string} target - Target folder path
-     */
-    function copyFolderRecursiveSync(source, target) {
-        const targetFolder = path.join(target, path.basename(source));
-        
-        // Create target folder if it doesn't exist
-        if (!fs.existsSync(targetFolder)) {
-            fs.mkdirSync(targetFolder, { recursive: true });
-        }
-        
-        // Copy all files and subfolders
-        if (fs.lstatSync(source).isDirectory()) {
-            const files = fs.readdirSync(source);
-            files.forEach(file => {
-                const curSource = path.join(source, file);
-                if (fs.lstatSync(curSource).isDirectory()) {
-                    copyFolderRecursiveSync(curSource, targetFolder);
-                } else {
-                    fs.copyFileSync(curSource, path.join(targetFolder, file));
-                }
-            });
-        }
+
+        return {success: true, newPath: finalDestPath};
+    } catch (error) {
+        console.error("File move failed:", error);
+
+        return {success: false, error: error.message};
     }
-}
+});
 
 /**
  * Save the window bounds to the store.
@@ -451,6 +416,27 @@ function checkFileIsExist(dirPath) {
     }
 }
 
+/**
+ * Generates a unique filename by appending a counter to the filename if a file with the same name already exists.
+ *
+ * @function generateUniqueFilename
+ *
+ * @param {string} dirPath - The directory path where the file is located.
+ * @param {string} filename - The name of the file to generate a unique filename for.
+ * @param {boolean} isFile - Whether the filename is a file or a directory. Defaults to `false`.
+ *
+ * @returns {string} The generated unique filename.
+ *
+ * @example
+ * // Generate a unique filename
+ * const generatedFilename = generateUniqueFilename('/path/to/directory', 'example.txt');
+ * console.log(generatedFilename);  // example (1).txt
+ *
+ * @example
+ * // Generate a unique directory name
+ * const generatedDirname = generateUniqueFilename('/path/to/directory', 'example', true);
+ * console.log(generatedDirname);  // example (1)
+ */
 function generateUniqueFilename(dirPath, filename, isFile = false) {
     let counter = 0;
     let parsed = path.parse(filename);
@@ -465,5 +451,33 @@ function generateUniqueFilename(dirPath, filename, isFile = false) {
         }
 
         counter++;
+    }
+}
+
+/**
+ * Recursively copies a folder
+ *
+ * @param {string} source - Source folder path
+ * @param {string} target - Target folder path
+ */
+function copyFolderRecursiveSync(source, target) {
+    const targetFolder = path.join(target, path.basename(source));
+
+    // Create target folder if it doesn't exist
+    if (!fs.existsSync(targetFolder)) {
+        fs.mkdirSync(targetFolder, {recursive: true});
+    }
+
+    // Copy all files and subfolders
+    if (fs.lstatSync(source).isDirectory()) {
+        const files = fs.readdirSync(source);
+        files.forEach(file => {
+            const curSource = path.join(source, file);
+            if (fs.lstatSync(curSource).isDirectory()) {
+                copyFolderRecursiveSync(curSource, targetFolder);
+            } else {
+                fs.copyFileSync(curSource, path.join(targetFolder, file));
+            }
+        });
     }
 }

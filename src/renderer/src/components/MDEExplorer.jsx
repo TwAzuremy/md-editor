@@ -43,18 +43,18 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         const handleRefresh = (event) => {
             // Check if the event has a specific path to refresh
             const refreshPath = event.detail?.path;
-            
-            // If a specific path is provided and it's not the current directory, ignore it
+
+            // If a specific path is provided, and it's not the current directory, ignore it
             if (refreshPath && refreshPath !== dirPath) {
                 return;
             }
-            
+
             readDirectory(dirPath).then(list => setFileList(list || []));
         };
-        window.addEventListener('refresh-explorer', handleRefresh);
+        window.addEventListener("refresh-explorer", handleRefresh);
 
         return () => {
-            window.removeEventListener('refresh-explorer', handleRefresh);
+            window.removeEventListener("refresh-explorer", handleRefresh);
         };
     }, [dirPath, readDirectory]);
 
@@ -92,12 +92,12 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         const isSuccess = await window.explorer.createFile(
             // TODO [BUG] When "dirPath" is empty, it does not switch to "dirPathRef.current", which is the path to the workspace.
             dirPath || dirPathRef.current,
-            isFile ? "New File" : "New Folder",
+            isFile ? "New File.md" : "New Folder",
             isFile
         );
 
         if (isSuccess) {
-            logger.info("File created successfully: " + isSuccess);
+            logger.info("[Explorer] File created successfully: " + isSuccess);
         }
     }
 

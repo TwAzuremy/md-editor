@@ -4,6 +4,7 @@ import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import {memo, useMemo, useState} from "react";
 import {logger} from "@utils/Logger.js";
+import {dragEnd} from "@utils/Listener.js";
 
 /**
  * File component, used to display directory items
@@ -28,25 +29,8 @@ const MDEFile = memo(({dirPath, name, showTwigs = true, ...props}) => {
         }));
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.dropEffect = "move";
-        // Set data-is-dragging attribute
-        e.currentTarget.setAttribute("data-is-dragging", "true");
-        // Add dragend event listener to remove the attribute and handle drop to workspace root
-        const handleDragEnd = async (e) => {
-            e.currentTarget.removeAttribute("data-is-dragging");
-            e.currentTarget.removeEventListener("dragend", handleDragEnd);
 
-            // If dropped outside any valid drop target, move to workspace root
-            if (e.dataTransfer.dropEffect === "none") {
-                const workspaceRoot = dirPath.split("\\")[0];
-                const result = await window.explorer.moveFileOrFolder(fullPath, workspaceRoot);
-                if (!result.success) {
-                    logger.warn("Move to workspace root failed:", result.error);
-                }
-            }
-        };
-        e.currentTarget.addEventListener("dragend", handleDragEnd);
-        // Prevent browser default drag behavior
-        e.stopPropagation();
+        dragEnd(e, dirPath, fullPath);
     };
 
     // Handle drag over event

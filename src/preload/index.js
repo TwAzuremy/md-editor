@@ -30,7 +30,20 @@ if (process.contextIsolated) {
             isMaximized: () => ipcRenderer.invoke("window-is-maximized")
         });
 
-        contextBridge.exposeInMainWorld("explorer", {
+        const path = require('path');
+const os = require('os');
+
+contextBridge.exposeInMainWorld('path', {
+  join: (...args) => path.join(...args),
+  basename: (...args) => path.basename(...args),
+  dirname: (...args) => path.dirname(...args)
+});
+
+contextBridge.exposeInMainWorld('os', {
+  tmpdir: () => os.tmpdir()
+});
+
+contextBridge.exposeInMainWorld("explorer", {
             /**
              * Check if a directory exists.
              *
@@ -52,7 +65,7 @@ if (process.contextIsolated) {
              *
              * @returns {Promise<{path: string, name: string}>}
              */
-            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),
+            openDirectoryDialog: () => ipcRenderer.invoke("open-directory-dialog"),        
             /**
              * Open a directory in the system's file explorer.
              *
@@ -60,6 +73,14 @@ if (process.contextIsolated) {
              * @returns {Promise<boolean>}
              */
             openInSystemExplorer: (dirPath) => ipcRenderer.invoke("open-in-system-explorer", dirPath),
+            /**
+             * Move a file or folder to a new location.
+             *
+             * @param {string} sourcePath - Path of the file or folder to move.
+             * @param {string} destinationPath - Destination directory path.
+             * @returns {Promise<{success: boolean, newPath?: string, error?: string}>}
+             */
+            moveFileOrFolder: (sourcePath, destinationPath) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath),
             /**
              * Create a file or folder.
              *

@@ -31,7 +31,7 @@
 
         position: absolute;
         top: 0;
-        right: calc(100% + var(--mde-file-twigs-spacing));
+        right: calc(100% + 4px);
     }
 
     .trunk {
@@ -39,10 +39,25 @@
 
         position: absolute;
         top: var(--mde-explorer-tweaks-trunk-top);
-        right: calc(100% + var(--size-svg-normal) + var(--mde-folder-twigs-spacing) - var(--mde-explorer-tweaks-trunk-right));
+        right: calc(100% + var(--size-svg-normal) + 4px - var(--mde-explorer-tweaks-trunk-right));
         width: var(--mde-explorer-tweaks-trunk-width);
         background: var(--ui-color-twigs);
-        height: calc(100% + var(--mde-folder-spacing));
+        height: calc(100% + 4px);
         border-radius: calc(var(--mde-explorer-tweaks-trunk-width) / 2);
+    }
+
+    &:has(+.mde-file, +.mde-folder) {
+        > .trunk {
+            display: block;
+        }
+    }
+
+    /* Add drag style */
+    &:active {
+        opacity: 0.7;
+    }
+
+    &[draggable=true] {
+        cursor: move;
     }
 }

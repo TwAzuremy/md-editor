@@ -9,7 +9,6 @@ import MDEExplorer from "@components/MDEExplorer.jsx";
 import MDEExplorerController from "@components/MDEExplorerController.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
 import {TempProvider} from "@renderer/provider/TempProvider.jsx";
-import {logger} from "@utils/Logger.js";
 import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
@@ -106,9 +105,12 @@ function MDEFileManager() {
                 icon={<IconLoader name={"search"}/>}/>
             <MDEPopover direction={"right"} nearEdge={"top"}>
                 <div className={"workspace"} slot={"default"}
-                    onDragOver={(e) => handleDragOver(e, () => {})}
-                    onDragLeave={(e) => handleDragLeave(e, () => {})}
-                    onDrop={(e) => handleDrop(e, currentWorkspace.path, () => {})}>
+                     onDragOver={(e) => handleDragOver(e, () => {
+                     })}
+                     onDragLeave={(e) => handleDragLeave(e, () => {
+                     })}
+                     onDrop={(e) => handleDrop(e, currentWorkspace.path, () => {
+                     })}>
                     <p className={"workspace__name"}>{currentWorkspace.name}</p>
                     <IconLoader name={"chevron-right"}/>
                 </div>

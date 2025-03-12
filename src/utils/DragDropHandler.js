@@ -2,11 +2,11 @@
  * Utility functions for handling drag and drop operations in the file explorer
  */
 
-import { logger } from "./Logger.js";
+import {logger} from "@utils/Logger.js";
 
 /**
  * Validates if a drag and drop operation is allowed between the source and target paths
- * 
+ *
  * @param {string} sourcePath - The path of the source item being dragged
  * @param {string} targetPath - The path of the target location
  * @param {Object} sourceData - The metadata of the source item
@@ -19,30 +19,30 @@ export function validateDragDrop(sourcePath, targetPath, sourceData) {
 
         // If source and target are the same, prevent operation
         if (sourcePath === targetPath) {
-            return { isValid: false, message: "Source and target paths are the same" };
+            return {isValid: false, message: "Source and target paths are the same"};
         }
 
         // If source directory and target directory are the same, prevent operation
         if (sourceDir === targetPath) {
-            return { isValid: false, message: "Source and target directories are the same" };
+            return {isValid: false, message: "Source and target directories are the same"};
         }
 
         // For directories, prevent moving to own subdirectory
         if (sourceData.type === "directory" && targetPath.startsWith(sourcePath + "\\")) {
             logger.warn("[DragDrop] Cannot move a folder to its own subdirectory");
-            return { isValid: false, message: "Cannot move a folder to its own subdirectory" };
+            return {isValid: false, message: "Cannot move a folder to its own subdirectory"};
         }
 
-        return { isValid: true };
+        return {isValid: true};
     } catch (error) {
         logger.error("Error in drag and drop validation:", error);
-        return { isValid: false, message: error.message };
+        return {isValid: false, message: error.message};
     }
 }
 
 /**
  * Handles the drag over event
- * 
+ *
  * @param {DragEvent} event - The drag over event
  * @param {Function} setDragOver - Function to update drag over state
  */
@@ -55,7 +55,7 @@ export function handleDragOver(event, setDragOver) {
 
 /**
  * Handles the drag leave event
- * 
+ *
  * @param {DragEvent} event - The drag leave event
  * @param {Function} setDragOver - Function to update drag over state
  */
@@ -67,9 +67,9 @@ export function handleDragLeave(event, setDragOver) {
 
 /**
  * Handles the drop event for files and folders
- * 
+ *
  * @param {DragEvent} event - The drop event
- * @param {string} targetPath - The path where the item is being dropped
+ * @param {string|null} targetPath - The path where the item is being dropped
  * @param {Function} setDragOver - Function to update drag over state
  * @returns {Promise<void>}
  */

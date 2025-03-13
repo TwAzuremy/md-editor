@@ -19,7 +19,7 @@ export async function handleExternalFileDrop(event, targetPath) {
 
     logger.info(`[DragDrop] Handling ${files.length} external files dropped to ${targetPath}`);
 
-    // 处理每个拖拽的文件
+    // Process each dragged file
     for (let i = 0; i < files.length; i++) {
         const file = files[i];
         const filePath = file.path;
@@ -30,8 +30,8 @@ export async function handleExternalFileDrop(event, targetPath) {
         }
 
         try {
-            // 对于外部文件，我们应该复制而不是移动
-            // 通过传递第三个参数 true 来指示这是一个复制操作
+            // For external files, we should copy instead of move
+            // Pass the third parameter as true to indicate this is a copy operation
             const result = await window.explorer.moveFileOrFolder(filePath, targetPath, true);
 
             if (result.success) {
@@ -121,29 +121,29 @@ export async function handleDrop(event, targetPath, setDragOver) {
     event.stopPropagation();
     setDragOver?.(false);
 
-    // 如果目标路径为空，则不处理拖放操作
+    // If target path is empty, do not process drag and drop operation
     if (!targetPath) {
         logger.warn("[DragDrop] Target path is empty");
         return;
     }
 
     try {
-        // 检查是否是外部文件拖拽
+        // Check if it's an external file drag
         if (event.dataTransfer.files.length > 0) {
-            // 处理外部文件拖拽
+            // Handle external file drag
             await handleExternalFileDrop(event, targetPath);
             return;
         }
 
-        // 处理内部文件拖拽
+        // Handle internal file drag
         const sourcePath = event.dataTransfer.getData("text/plain");
-        // 如果没有sourcePath，可能是外部拖拽但没有文件
+        // If there's no sourcePath, it might be an external drag but without files
         if (!sourcePath) {
             logger.warn("[DragDrop] No source path found in drag data");
             return;
         }
 
-        // 检查是否存在application/json数据，避免JSON解析错误
+        // Check if application/json data exists to avoid JSON parsing errors
         const jsonData = event.dataTransfer.getData("application/json");
         if (!jsonData) {
             logger.warn("[DragDrop] No JSON data found in drag data");

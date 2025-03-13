@@ -283,29 +283,29 @@ ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath, isC
         const uniqueName = generateUniqueFilename(destinationPath, baseName, fs.statSync(sourcePath).isFile());
         const finalDestPath = join(destinationPath, uniqueName);
 
-        // 如果是复制操作，直接复制文件/文件夹而不删除源文件
+        // If it's a copy operation, directly copy the file/folder without deleting the source
         if (isCopy) {
             if (fs.statSync(sourcePath).isDirectory()) {
-                // 对于目录，使用递归复制
+                // For directories, use recursive copy
                 fs.mkdirSync(finalDestPath, { recursive: true });
                 copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
             } else {
-                // 对于文件，使用简单复制
+                // For files, use simple copy
                 fs.copyFileSync(sourcePath, finalDestPath);
             }
         } else {
-            // 如果是移动操作，先尝试直接移动
+            // If it's a move operation, first try direct move
             try {
                 fs.renameSync(sourcePath, finalDestPath);
             } catch (moveError) {
-                // 如果直接移动失败，尝试复制然后删除的方法
+                // If direct move fails, try copy then delete method
                 if (fs.statSync(sourcePath).isDirectory()) {
-                    // 对于目录，使用递归复制
+                    // For directories, use recursive copy
                     fs.mkdirSync(finalDestPath, { recursive: true });
                     copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
                     fs.rmSync(sourcePath, { recursive: true, force: true });
                 } else {
-                    // 对于文件，使用简单复制
+                    // For files, use simple copy
                     fs.copyFileSync(sourcePath, finalDestPath);
                     fs.unlinkSync(sourcePath);
                 }

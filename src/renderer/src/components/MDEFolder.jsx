@@ -1,14 +1,14 @@
 import "@components/css/mde-folder.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
-import {useRef, useState, useCallback, memo, useMemo, useEffect} from "react";
+import { useRef, useState, useCallback, memo, useMemo, useEffect } from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
-import {useTemp} from "@renderer/provider/TempProvider.jsx";
+import { useTemp } from "@renderer/provider/TempProvider.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
-import {logger} from "@utils/Logger.js";
-import {dragEnd} from "@utils/Listener.js";
-import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandler.js";
+import { logger } from "@utils/Logger.js";
+import { dragEnd } from "@utils/Listener.js";
+import { handleDragLeave, handleDragOver, handleDrop } from "@utils/DragDropHandler.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -20,11 +20,11 @@ import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandle
  * @returns {React.ReactElement} rendered element
  */
 const MDEFolder = memo(({
-                            dirPath,
-                            name,
-                            showTwigs = true,
-                            ...props
-                        }) => {
+    dirPath,
+    name,
+    showTwigs = true,
+    ...props
+}) => {
     const [fileList, setFileList] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
     const [hasActive, setHasActive] = useState(false);
@@ -32,7 +32,7 @@ const MDEFolder = memo(({
     const folderEl = useRef(null);
     const watcherIdRef = useRef(null);
 
-    const {getTemp, setTemp} = useTemp();
+    const { getTemp, setTemp } = useTemp();
 
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
     // Listen for temporary values.
@@ -52,7 +52,7 @@ const MDEFolder = memo(({
             // When the folder is closed, remove the listener.
             if (watcherIdRef.current) {
                 await window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+                window.explorer.removeWatchListeners(({ watcherId: id }) => refresh(id));
             }
 
             return;
@@ -80,7 +80,7 @@ const MDEFolder = memo(({
         const startWatching = async () => {
             try {
                 watcherIdRef.current = await window.explorer.watchFolder(fullPath);
-                window.explorer.onWatchUpdate(({watcherId: id}) => refresh(id));
+                window.explorer.onWatchUpdate(({ watcherId: id }) => refresh(id));
             } catch (error) {
                 logger.error("[Folder] Watch failed:", error);
             }
@@ -95,7 +95,7 @@ const MDEFolder = memo(({
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
                 window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+                window.explorer.removeWatchListeners(({ watcherId: id }) => refresh(id));
             }
 
             // If a folder is deleted, and the folder is selected, its value in the temporary cache is removed.
@@ -133,7 +133,7 @@ const MDEFolder = memo(({
         e.dataTransfer.effectAllowed = "move";
         dragEnd(e, dirPath, fullPath);
     };
-    // 使用utils中的通用handleDrop函数
+    // Use the common handleDrop function from utils
 
     const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;
@@ -156,13 +156,13 @@ const MDEFolder = memo(({
 
     return (
         <div className={`mde-folder${hasActive ? " active" : ""}`}
-             {...props}
-             ref={folderEl}>
-            {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
+            {...props}
+            ref={folderEl}>
+            {showTwigs && <IconLoader name={"twig"} className={"twig"} />}
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton
                 className={`${isDragOver ? "drag-over" : ""}`}
-                icon={<IconLoader name={"folder"}/>}
+                icon={<IconLoader name={"folder"} />}
                 text={name}
                 active={taggedFolderPath === fullPath}
                 onClick={openAndCloseFolder}
@@ -170,7 +170,7 @@ const MDEFolder = memo(({
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)}/>
+                onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)} />
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

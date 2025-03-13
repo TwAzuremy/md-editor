@@ -1,14 +1,16 @@
 import "@components/css/mde-folder.scss";
 
 import MDEButton from "@components/MDEButton.jsx";
-import { useRef, useState, useCallback, memo, useMemo, useEffect } from "react";
+import {useRef, useState, useCallback, memo, useMemo, useEffect} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
-import { useTemp } from "@renderer/provider/TempProvider.jsx";
+import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
-import { logger } from "@utils/Logger.js";
-import { dragEnd } from "@utils/Listener.js";
-import { handleDragLeave, handleDragOver, handleDrop } from "@utils/DragDropHandler.js";
+import {logger} from "@utils/Logger.js";
+import {dragEnd} from "@utils/Listener.js";
+import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandler.js";
+import {useDispatch, useSelector} from "react-redux";
+import {selectExpandedFolders, toggleFolder} from "@store/folderSlice.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -20,67 +22,79 @@ import { handleDragLeave, handleDragOver, handleDrop } from "@utils/DragDropHand
  * @returns {React.ReactElement} rendered element
  */
 const MDEFolder = memo(({
-    dirPath,
-    name,
-    showTwigs = true,
-    ...props
-}) => {
+                            dirPath,
+                            name,
+                            showTwigs = true,
+                            ...props
+                        }) => {
     const [fileList, setFileList] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
-    const [hasActive, setHasActive] = useState(false);
+    const [isIconLoaded, setIsIconLoaded] = useState(false);
 
     const folderEl = useRef(null);
     const watcherIdRef = useRef(null);
 
-    const { getTemp, setTemp } = useTemp();
+    const {getTemp, setTemp} = useTemp();
 
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
     // Listen for temporary values.
     const taggedFolderPath = useMemo(() => getTemp(ElectronStore.KEY_TAGGED_FOLDER), [getTemp]);
 
+    const dispatch = useDispatch();
+    const expandedFolder = useSelector(selectExpandedFolders);
+    const hasActive = expandedFolder.includes(fullPath);
+
     /**
      * Get the contents of the folder.
      *
-     * @param {boolean} [isForced=false] The isForced parameter is used to get content updates when the folder is open,
-     * rather than closing the folder.
      * @returns {Promise<void>}
      */
-    const handleFolderChange = async (isForced = false) => {
-        if (hasActive && !isForced) {
+    const handleFolderChange = async () => {
+        dispatch(toggleFolder(fullPath));
+        setTemp(ElectronStore.KEY_TAGGED_FOLDER, fullPath);
+
+        if (hasActive) {
             setFileList([]);
 
             // When the folder is closed, remove the listener.
             if (watcherIdRef.current) {
                 await window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({ watcherId: id }) => refresh(id));
+                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
             }
 
             return;
         }
 
-        const list = await window.explorer.readDirectory(fullPath, false);
-        setFileList(list);
+        await refreshFileList();
     };
 
-    const openAndCloseFolder = async () => {
-        setTemp(ElectronStore.KEY_TAGGED_FOLDER, fullPath);
-        morph();
-
-        await handleFolderChange(false);
+    const refreshFileList = async () => {
+        const list = await window.explorer.readDirectory(fullPath, false);
+        setFileList(list);
     };
 
     async function refresh(id) {
         // Verify that the listener is current
         if (id === watcherIdRef.current) {
-            await handleFolderChange(true);
+            await refreshFileList();
         }
     }
+
+    function afterIconLoad() {
+        setIsIconLoaded(true);
+    }
+
+    useEffect(() => {
+        if (hasActive) {
+            refreshFileList();
+        }
+    }, []);
 
     useEffect(() => {
         const startWatching = async () => {
             try {
                 watcherIdRef.current = await window.explorer.watchFolder(fullPath);
-                window.explorer.onWatchUpdate(({ watcherId: id }) => refresh(id));
+                window.explorer.onWatchUpdate(({watcherId: id}) => refresh(id));
             } catch (error) {
                 logger.error("[Folder] Watch failed:", error);
             }
@@ -91,17 +105,17 @@ const MDEFolder = memo(({
             startWatching();
         }
 
+        // Morph the folder icon
+        if (isIconLoaded) {
+            morph();
+        }
+
         return () => {
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
                 window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({ watcherId: id }) => refresh(id));
+                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
             }
-
-            // If a folder is deleted, and the folder is selected, its value in the temporary cache is removed.
-            // if (taggedFolderPath === fullPath) {
-            //     setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
-            // }
         };
     }, [hasActive]);
 
@@ -110,17 +124,16 @@ const MDEFolder = memo(({
      *
      * @private
      */
-    function morph() {
+    const morph = useCallback(async () => {
         const svg = folderEl.current.querySelector("&>.mde-button svg");
         const folder = svg.querySelector(".folder");
         const white = svg.querySelector(".white");
 
-        setHasActive(!hasActive);
-        const state = !hasActive ? "Open" : "Close";
+        const state = hasActive ? "Open" : "Close";
 
         folder.setAttribute("d", svg.dataset[`folder${state}`]);
         white.setAttribute("d", svg.dataset[`white${state}`]);
-    }
+    }, [hasActive]);
 
     // Handle drag start events
     const handleDragStart = (e) => {
@@ -130,10 +143,10 @@ const MDEFolder = memo(({
             type: "directory",
             path: fullPath
         }));
+
         e.dataTransfer.effectAllowed = "move";
         dragEnd(e, dirPath, fullPath);
     };
-    // Use the common handleDrop function from utils
 
     const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;
@@ -155,22 +168,20 @@ const MDEFolder = memo(({
     }, [fullPath, props]);
 
     return (
-        <div className={`mde-folder${hasActive ? " active" : ""}`}
-            {...props}
-            ref={folderEl}>
-            {showTwigs && <IconLoader name={"twig"} className={"twig"} />}
+        <div className={`mde-folder${hasActive ? " active" : ""}`} {...props} ref={folderEl}>
+            {showTwigs && <IconLoader name={"twig"} className={"twig"}/>}
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton
                 className={`${isDragOver ? "drag-over" : ""}`}
-                icon={<IconLoader name={"folder"} />}
+                icon={<IconLoader name={"folder"} onLoad={afterIconLoad}/>}
                 text={name}
                 active={taggedFolderPath === fullPath}
-                onClick={openAndCloseFolder}
+                onClick={handleFolderChange}
                 draggable={true}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)} />
+                onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)}/>
             {
                 fileList?.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

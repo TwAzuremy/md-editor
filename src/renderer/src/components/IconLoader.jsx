@@ -1,4 +1,4 @@
-import React, {lazy, memo, Suspense, useMemo} from "react";
+import React, {lazy, memo, Suspense, useEffect, useMemo} from "react";
 
 // Use a global cache to avoid duplicate imports
 const iconCache = {};
@@ -16,7 +16,7 @@ const iconCache = {};
  * @example
  * <IconLoader name={"icon-name"}/>
  */
-const IconLoader = memo(({name, ...props}) => {
+const IconLoader = memo(({name, onLoad, ...props}) => {
     const Icon = useMemo(() => {
         // Get the icon component from the cache.
         if (iconCache[name]) {
@@ -29,6 +29,12 @@ const IconLoader = memo(({name, ...props}) => {
 
         return ImportedIcon;
     }, [name]);
+
+    useEffect(() => {
+        if (onLoad) {
+            onLoad();
+        }
+    }, [onLoad]);
 
     return (
         <Suspense fallback={null}>

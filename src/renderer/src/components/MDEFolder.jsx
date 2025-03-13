@@ -172,7 +172,7 @@ const MDEFolder = memo(({
                 onDragLeave={handleDragLeave}
                 onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)} />
             {
-                fileList.length !== 0 &&
+                fileList?.length !== 0 &&
                 <div className={"mde-folder__file-list"}>
                     {fileList.map((file, index) => renderFileItem(file, index))}
                 </div>

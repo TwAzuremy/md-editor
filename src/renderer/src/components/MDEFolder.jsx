@@ -174,7 +174,7 @@ const MDEFolder = memo(({
             {
                 fileList?.length !== 0 &&
                 <div className={"mde-folder__file-list"}>
-                    {fileList.map((file, index) => renderFileItem(file, index))}
+                    {fileList?.map((file, index) => renderFileItem(file, index))}
                 </div>
             }
         </div>

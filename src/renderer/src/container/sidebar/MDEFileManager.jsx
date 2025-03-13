@@ -4,7 +4,7 @@ import MDEInput from "@components/MDEInput.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEPopover from "@components/MDEPopover.jsx";
 import MDEButton from "@components/MDEButton.jsx";
-import {useEffect, useRef, useState} from "react";
+import {memo, useEffect, useRef, useState} from "react";
 import MDEExplorer from "@components/MDEExplorer.jsx";
 import MDEExplorerController from "@components/MDEExplorerController.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
@@ -21,7 +21,7 @@ const NO_WORKSPACE = {
     path: null
 };
 
-function MDEFileManager() {
+const MDEFileManager = memo(() => {
     const explorerRef = useRef(null);
 
     const [currentWorkspace, setCurrentWorkspace] = useState(NO_WORKSPACE);
@@ -166,6 +166,6 @@ function MDEFileManager() {
             </TempProvider>
         </div>
     );
-}
+});
 
 export default MDEFileManager;

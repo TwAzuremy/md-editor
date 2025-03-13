@@ -8,7 +8,7 @@ import MDESidebar from "@renderer/container/MDESidebar.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFileManager from "@renderer/container/sidebar/MDEFileManager.jsx";
 
-import {useState} from "react";
+import {memo, useState} from "react";
 
 /**
  * @prop {string} id Id of the nav bar and sidebar page switch.
@@ -42,13 +42,13 @@ function App() {
             <MDEHeader/>
             {/* Window drag area used for the sidebar */}
             <WindowDrag direction={"vertical"}/>
-            <SidebarWrapper />
+            <SidebarWrapper/>
             <MDEContent/>
         </div>
     );
 }
 
-function SidebarWrapper() {
+const SidebarWrapper = memo(() => {
     const [renderId, setRenderId] = useState(null);
 
     // noinspection JSValidateTypes
@@ -58,7 +58,7 @@ function SidebarWrapper() {
             <MDESidebar renderId={renderId} pageList={sidebarList}/>
         </>
     );
-}
+});
 
 export default App;
 

@@ -1,10 +1,11 @@
 import "@renderer/container/css/mde-content.scss";
 
-function MDEContent() {
+import {memo} from "react";
+
+const MDEContent = memo(() => {
     return (
-        <main id={"mde-content"}>
-        </main>
+        <main id={"mde-content"}></main>
     );
-}
+});
 
 export default MDEContent;

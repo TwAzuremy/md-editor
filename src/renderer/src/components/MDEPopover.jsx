@@ -1,6 +1,6 @@
 import "@components/css/mde-popover.scss";
 
-import React, {useEffect, useRef, useState} from "react";
+import React, {memo, useEffect, useRef, useState} from "react";
 import {logger} from "@utils/Logger.js";
 
 /**
@@ -21,12 +21,12 @@ import {logger} from "@utils/Logger.js";
  *     <div slot={"floating"}>Floating content</div>
  * </MDEPopover>
  */
-function MDEPopover({
-                        children,
-                        direction = "bottom",
-                        nearEdge = "center",
-                        ...props
-                    }) {
+const MDEPopover = memo(({
+                             children,
+                             direction = "bottom",
+                             nearEdge = "center",
+                             ...props
+                         }) => {
     const [isValid, setIsValid] = useState(true);
     const [floatingActive, setFloatingActive] = useState(false);
 
@@ -145,6 +145,6 @@ function MDEPopover({
             <div className={"mde-popover__floating"}>{floatingChildren}</div>
         </div>
     );
-}
+});
 
 export default MDEPopover;

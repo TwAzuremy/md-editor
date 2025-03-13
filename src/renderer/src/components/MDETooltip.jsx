@@ -1,5 +1,6 @@
 import "@components/css/mde-tooltip.scss";
-import {useEffect, useState} from "react";
+
+import {memo, useEffect, useState} from "react";
 import {logger} from "@utils/Logger.js";
 
 /**
@@ -17,7 +18,7 @@ import {logger} from "@utils/Logger.js";
  * @example
  * <MDETooltip tip="This is a tooltip">Hover me!</MDETooltip>
  */
-function MDETooltip({children, tip, direction = "top", ...props}) {
+const MDETooltip = memo(({children, tip, direction = "top", ...props}) => {
     const [isValid, setIsValid] = useState(true);
 
     useEffect(() => {
@@ -42,6 +43,6 @@ function MDETooltip({children, tip, direction = "top", ...props}) {
             </p>
         </div>
     );
-}
+});
 
 export default MDETooltip;

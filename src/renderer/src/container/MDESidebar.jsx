@@ -1,6 +1,6 @@
 import "@renderer/container/css/mde-sidebar.scss";
 
-import React from "react";
+import React, {memo} from "react";
 
 /**
  * A sidebar component for markdown-editor.
@@ -15,7 +15,7 @@ import React from "react";
  * @example
  * <MDESidebar renderId="test" pageList={[{...}, ...]} />
  */
-function MDESidebar({renderId = null, pageList = []}) {
+const MDESidebar = memo(({renderId = null, pageList = []}) => {
     return (
         <aside id={"mde-sidebar"}>
             {
@@ -25,6 +25,6 @@ function MDESidebar({renderId = null, pageList = []}) {
             }
         </aside>
     );
-}
+});
 
 export default MDESidebar;

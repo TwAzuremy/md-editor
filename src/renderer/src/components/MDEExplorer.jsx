@@ -147,7 +147,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
              onDragOver={(e) => handleDragOver(e, setIsDragOver)}
              onDragLeave={(e) => handleDragLeave(e, setIsDragOver)}
              onDrop={(e) => handleDrop(e, dirPath, setIsDragOver)}>
-            {fileList.map((file, index) => renderFileItem(file, index))}
+            {fileList?.map((file, index) => renderFileItem(file, index))}
         </div>
     );
 }));

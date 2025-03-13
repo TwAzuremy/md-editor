@@ -110,11 +110,6 @@ const MDEFolder = memo(({
             startWatcher();
         }
 
-        // Morph the folder icon
-        if (isIconLoaded) {
-            morph();
-        }
-
         return () => {
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
@@ -123,6 +118,13 @@ const MDEFolder = memo(({
             }
         };
     }, [hasActive]);
+
+    useEffect(() => {
+        // Morph the folder icon
+        if (isIconLoaded) {
+            morph();
+        }
+    }, [hasActive, isIconLoaded]);
 
     /**
      * Morphs the folder icon.

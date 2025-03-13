@@ -16,7 +16,7 @@ const iconCache = {};
  * @example
  * <IconLoader name={"icon-name"}/>
  */
-const IconLoader = memo(({name, onLoad, ...props}) => {
+const IconLoader = memo(({name, ...props}) => {
     const Icon = useMemo(() => {
         // Get the icon component from the cache.
         if (iconCache[name]) {
@@ -29,12 +29,6 @@ const IconLoader = memo(({name, onLoad, ...props}) => {
 
         return ImportedIcon;
     }, [name]);
-
-    useEffect(() => {
-        if (onLoad) {
-            onLoad();
-        }
-    }, [onLoad]);
 
     return (
         <Suspense fallback={null}>

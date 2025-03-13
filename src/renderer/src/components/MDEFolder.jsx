@@ -22,14 +22,11 @@ import {selectExpandedFolders, toggleFolder} from "@store/folderSlice.js";
  * @returns {React.ReactElement} rendered element
  */
 const MDEFolder = memo(({
-                            dirPath,
-                            name,
-                            showTwigs = true,
+                            dirPath, name, showTwigs = true,
                             ...props
                         }) => {
     const [fileList, setFileList] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
-    const [isIconLoaded, setIsIconLoaded] = useState(false);
 
     const folderEl = useRef(null);
     const watcherIdRef = useRef(null);
@@ -80,10 +77,6 @@ const MDEFolder = memo(({
         }
     }
 
-    function afterIconLoad() {
-        setIsIconLoaded(true);
-    }
-
     const startWatcher = async () => {
         try {
             watcherIdRef.current = await window.explorer.watchFolder(fullPath);
@@ -110,6 +103,9 @@ const MDEFolder = memo(({
             startWatcher();
         }
 
+        // Morph the folder icon
+        morph();
+
         return () => {
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
@@ -119,27 +115,25 @@ const MDEFolder = memo(({
         };
     }, [hasActive]);
 
-    useEffect(() => {
-        // Morph the folder icon
-        if (isIconLoaded) {
-            morph();
-        }
-    }, [hasActive, isIconLoaded]);
-
     /**
      * Morphs the folder icon.
      *
      * @private
      */
     const morph = useCallback(async () => {
-        const svg = folderEl.current.querySelector("&>.mde-button svg");
-        const folder = svg.querySelector(".folder");
-        const white = svg.querySelector(".white");
+        try {
+            const svg = folderEl.current.querySelector("&>.mde-button svg");
+            const folder = svg.querySelector(".folder");
+            const white = svg.querySelector(".white");
 
-        const state = hasActive ? "Open" : "Close";
+            const state = hasActive ? "Open" : "Close";
 
-        folder.setAttribute("d", svg.dataset[`folder${state}`]);
-        white.setAttribute("d", svg.dataset[`white${state}`]);
+            folder.setAttribute("d", svg.dataset[`folder${state}`]);
+            white.setAttribute("d", svg.dataset[`white${state}`]);
+        } catch (error) {
+            // The icon can't be found on the first load, which is normal.
+            void 0;
+        }
     }, [hasActive]);
 
     // Handle drag start events
@@ -180,7 +174,7 @@ const MDEFolder = memo(({
             {showTwigs && <div className={"trunk"}></div>}
             <MDEButton
                 className={`${isDragOver ? "drag-over" : ""}`}
-                icon={<IconLoader name={"folder"} onLoad={afterIconLoad}/>}
+                icon={<IconLoader name={"folder"}/>}
                 text={name}
                 active={taggedFolderPath === fullPath}
                 onClick={handleFolderChange}

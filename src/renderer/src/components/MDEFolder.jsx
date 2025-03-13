@@ -84,6 +84,19 @@ const MDEFolder = memo(({
         setIsIconLoaded(true);
     }
 
+    const startWatcher = async () => {
+        try {
+            watcherIdRef.current = await window.explorer.watchFolder(fullPath);
+            window.explorer.onWatchListeners(watcherIdRef.current, handleWatcherUpdate);
+        } catch (error) {
+            logger.error("[Folder] Watch failed:", error);
+        }
+    };
+
+    const handleWatcherUpdate = async () => {
+        await refresh(watcherIdRef.current);
+    };
+
     useEffect(() => {
         if (hasActive) {
             refreshFileList();
@@ -91,18 +104,10 @@ const MDEFolder = memo(({
     }, []);
 
     useEffect(() => {
-        const startWatching = async () => {
-            try {
-                watcherIdRef.current = await window.explorer.watchFolder(fullPath);
-                window.explorer.onWatchUpdate(({watcherId: id}) => refresh(id));
-            } catch (error) {
-                logger.error("[Folder] Watch failed:", error);
-            }
-        };
 
         // When the folder is opened, the listener is initiated.
         if (hasActive) {
-            startWatching();
+            startWatcher();
         }
 
         // Morph the folder icon
@@ -114,7 +119,7 @@ const MDEFolder = memo(({
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
                 window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+                window.explorer.removeWatchListeners(watcherIdRef.current, handleWatcherUpdate);
             }
         };
     }, [hasActive]);

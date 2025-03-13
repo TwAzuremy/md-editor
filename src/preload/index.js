@@ -1,9 +1,15 @@
-import { contextBridge, ipcRenderer } from "electron";
-import { electronAPI } from "@electron-toolkit/preload";
-import { logger } from "../utils/Logger.js";
+import {contextBridge, ipcRenderer} from "electron";
+import {electronAPI} from "@electron-toolkit/preload";
+import {logger} from "../utils/Logger.js";
 
 // Custom APIs for renderer
 const api = {};
+
+function handleWatchUpdate(id, watcherId, callback) {
+    if (id === watcherId) {
+        callback?.();
+    }
+}
 
 // Use `contextBridge` APIs to expose Electron APIs to
 // renderer only if context isolation is enabled, otherwise
@@ -20,7 +26,8 @@ if (process.contextIsolated) {
              *
              * @param {function} callback - Function to be called with maximized state.
              */
-            onMaximize: (callback) => ipcRenderer.on("maximize", (_, isMaximized) => callback(isMaximized)),
+            onMaximize: (callback) =>
+                ipcRenderer.on("maximize", (_, isMaximized) => callback(isMaximized)),
 
             /**
              * Check if the window is maximized.
@@ -68,7 +75,8 @@ if (process.contextIsolated) {
              * @param {boolean} [isCopy=false] - If true, copy the file instead of moving it.
              * @returns {Promise<{success: boolean, newPath?: string, error?: string}>}
              */
-            moveFileOrFolder: (sourcePath, destinationPath, isCopy = false) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath, isCopy),
+            moveFileOrFolder: (sourcePath, destinationPath, isCopy = false) =>
+                ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath, isCopy),
             /**
              * Create a file or folder.
              *
@@ -81,11 +89,13 @@ if (process.contextIsolated) {
                 ipcRenderer.invoke("create-file", dirPath, name, isFile),
             watchFolder: (dirPath) => ipcRenderer.invoke("watch-folder", dirPath),
             unwatchFolder: (watcherId) => ipcRenderer.invoke("unwatch-folder", watcherId),
-            onWatchUpdate: (callback) => {
-                ipcRenderer.on("watch-folder-update", (_, data) => callback(data));
+            onWatchListeners: (watcherId, callback) => {
+                ipcRenderer.on("watch-folder-update",
+                    (_, {watcherId: id}) => handleWatchUpdate(id, watcherId, callback));
             },
-            removeWatchListeners: (callback) => {
-                ipcRenderer.removeListener("watch-folder-update", (_, data) => callback(data));
+            removeWatchListeners: (watcherId, callback) => {
+                ipcRenderer.removeListener("watch-folder-update",
+                    (_, {watcherId: id}) => handleWatchUpdate(id, watcherId, callback));
             }
         });
 

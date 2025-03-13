@@ -24,6 +24,7 @@ import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandle
 const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     // The method used to give exposure is updated in real time with dirPath.
     const dirPathRef = useRef(dirPath);
+    const watcherIdRef = useRef(null);
 
     const [fileList, setFileList] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
@@ -31,69 +32,38 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     const {setTemp} = useTemp();
 
     const readDirectory = async (path) => {
-        return await window.explorer.readDirectory(path, false);
+        setFileList(await window.explorer.readDirectory(path, false));
     };
 
-    useEffect(() => {
-        if (!dirPath) {
-            return;
-        }
-
-        readDirectory(dirPath).then(list => setFileList(list || []));
-
-        // Add refresh-explorer event listener
-        const handleRefresh = (event) => {
-            // Check if the event has a specific path to refresh
-            const refreshPath = event.detail?.path;
-
-            // If a specific path is provided, and it's not the current directory, ignore it
-            if (refreshPath && refreshPath !== dirPath) {
+    const startWatcher = async () => {
+        try {
+            if (!dirPath) {
                 return;
             }
 
-            readDirectory(dirPath).then(list => setFileList(list || []));
-        };
-        window.addEventListener("refresh-explorer", handleRefresh);
+            watcherIdRef.current = await window.explorer.watchFolder(dirPath);
+            window.explorer.onWatchListeners(watcherIdRef.current, handleWatcherUpdate);
+        } catch (error) {
+            logger.error("[Explorer] watch failed: ", error);
+        }
+    };
 
-        return () => {
-            window.removeEventListener("refresh-explorer", handleRefresh);
-        };
-    }, [dirPath, readDirectory]);
+    const handleWatcherUpdate = async () => {
+        await readDirectory(dirPathRef.current);
+    }
 
     useEffect(() => {
         setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
 
         dirPathRef.current = dirPath;
 
-        let watcher;
-
-        const startWatching = async () => {
-            try {
-                if (!dirPath) {
-                    return;
-                }
-
-                watcher = await window.explorer.watchFolder(dirPath);
-                window.explorer.onWatchUpdate(({watcherId: id}) => {
-                    if (id === watcher.id) {
-                        readDirectory();
-                    }
-                });
-            } catch (error) {
-                logger.error("[Explorer] watch failed: ", error);
-            }
-        };
-
-        startWatching();
+        readDirectory(dirPath);
+        startWatcher();
 
         return () => {
-            if (watcher) {
-                window.explorer.unwatchFolder(watcher);
-                window.explorer.removeWatchListeners(({watcherId: id}) => {
-                    if (id === watcher.id) {
-                        readDirectory();
-                    }
-                });
+            if (watcherIdRef.current) {
+                window.explorer.unwatchFolder(watcherIdRef.current);
+                window.explorer.removeWatchListeners(watcherIdRef.current, handleWatcherUpdate);
             }
         };
     }, [dirPath]);
@@ -119,7 +89,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
      */
     function refresh() {
         setFileList([]);
-        readDirectory(dirPathRef.current).then(list => setFileList(list || []));
+        readDirectory(dirPathRef.current);
     }
 
     async function createFile(dirPath = void 0, isFile = false) {

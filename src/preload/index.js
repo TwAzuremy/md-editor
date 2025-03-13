@@ -1,6 +1,6 @@
-import {contextBridge, ipcRenderer} from "electron";
-import {electronAPI} from "@electron-toolkit/preload";
-import {logger} from "../utils/Logger.js";
+import { contextBridge, ipcRenderer } from "electron";
+import { electronAPI } from "@electron-toolkit/preload";
+import { logger } from "../utils/Logger.js";
 
 // Custom APIs for renderer
 const api = {};
@@ -65,9 +65,10 @@ if (process.contextIsolated) {
              *
              * @param {string} sourcePath - Path of the file or folder to move.
              * @param {string} destinationPath - Destination directory path.
+             * @param {boolean} [isCopy=false] - If true, copy the file instead of moving it.
              * @returns {Promise<{success: boolean, newPath?: string, error?: string}>}
              */
-            moveFileOrFolder: (sourcePath, destinationPath) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath),
+            moveFileOrFolder: (sourcePath, destinationPath, isCopy = false) => ipcRenderer.invoke("move-file-or-folder", sourcePath, destinationPath, isCopy),
             /**
              * Create a file or folder.
              *

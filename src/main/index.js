@@ -1,9 +1,9 @@
 // noinspection JSIgnoredPromiseFromCall
 
-import {app, BrowserWindow, ipcMain, screen, shell, dialog} from "electron";
-import {join} from "path";
+import { app, BrowserWindow, ipcMain, screen, shell, dialog } from "electron";
+import { join } from "path";
 import Store from "electron-store";
-import {electronApp, is, optimizer} from "@electron-toolkit/utils";
+import { electronApp, is, optimizer } from "@electron-toolkit/utils";
 import icon from "../../resources/icons/icon.png?asset";
 import * as path from "node:path";
 
@@ -20,7 +20,7 @@ function createWindow() {
     const windowBounds = store.get("md-editor.window-bounds");
 
     // Get the work area size of the primary display
-    const {width, height} = screen.getPrimaryDisplay().workAreaSize;
+    const { width, height } = screen.getPrimaryDisplay().workAreaSize;
 
     // Calculate the default x and y coordinates for the window
     const defaultBounds = {
@@ -44,7 +44,7 @@ function createWindow() {
         frame: false,
         autoHideMenuBar: true,
         icon: icon,
-        ...(process.platform === "linux" ? {icon} : {}),
+        ...(process.platform === "linux" ? { icon } : {}),
         webPreferences: {
             preload: join(__dirname, "../preload/index.mjs"),
             sandbox: false,
@@ -59,7 +59,7 @@ function createWindow() {
 
     mainWindow.webContents.setWindowOpenHandler((details) => {
         shell.openExternal(details.url);
-        return {action: "deny"};
+        return { action: "deny" };
     });
 
     // HMR for renderer base on electron-vite cli.
@@ -123,7 +123,7 @@ ipcMain.handle("check-path-exists", (_, dirPath) => checkFileIsExist(dirPath));
 
 ipcMain.handle("read-directory", async (_, dirPath, showHiddenFiles = false) => {
     try {
-        const directs = fs.readdirSync(dirPath, {withFileTypes: true});
+        const directs = fs.readdirSync(dirPath, { withFileTypes: true });
 
         return directs
             .filter(dirent => {
@@ -256,26 +256,26 @@ ipcMain.handle("unwatch-folder", async (_, watcherId) => {
     }
 });
 
-ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => {
+ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath, isCopy = false) => {
     if (!sourcePath || !destinationPath) {
-        return {success: false, error: "Invalid path"};
+        return { success: false, error: "Invalid path" };
     }
 
     try {
         if (!checkFileIsExist(sourcePath)) {
-            return {success: false, error: "The source file or folder does not exist"};
+            return { success: false, error: "The source file or folder does not exist" };
         }
 
         if (path.resolve(sourcePath) === path.resolve(destinationPath)) {
-            return {success: false, error: "The source and destination paths are the same"};
+            return { success: false, error: "The source and destination paths are the same" };
         }
 
         if (checkFileIsExist(destinationPath) && !fs.statSync(destinationPath).isDirectory()) {
-            return {success: false, error: "The target path is not a directory"};
+            return { success: false, error: "The target path is not a directory" };
         }
 
         if (!checkFileIsExist(destinationPath)) {
-            fs.mkdirSync(destinationPath, {recursive: true});
+            fs.mkdirSync(destinationPath, { recursive: true });
         }
 
         const baseName = path.basename(sourcePath);
@@ -283,28 +283,40 @@ ipcMain.handle("move-file-or-folder", async (_, sourcePath, destinationPath) => 
         const uniqueName = generateUniqueFilename(destinationPath, baseName, fs.statSync(sourcePath).isFile());
         const finalDestPath = join(destinationPath, uniqueName);
 
-        try {
-            // Try moving straight first
-            fs.renameSync(sourcePath, finalDestPath);
-        } catch (moveError) {
-            // If the direct move fails, try copying and then deleting the method
+        // 如果是复制操作，直接复制文件/文件夹而不删除源文件
+        if (isCopy) {
             if (fs.statSync(sourcePath).isDirectory()) {
-                // For directories, recursive replication is used
-                fs.mkdirSync(finalDestPath, {recursive: true});
+                // 对于目录，使用递归复制
+                fs.mkdirSync(finalDestPath, { recursive: true });
                 copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
-                fs.rmSync(sourcePath, {recursive: true, force: true});
             } else {
-                // For files, use simple copy
+                // 对于文件，使用简单复制
                 fs.copyFileSync(sourcePath, finalDestPath);
-                fs.unlinkSync(sourcePath);
+            }
+        } else {
+            // 如果是移动操作，先尝试直接移动
+            try {
+                fs.renameSync(sourcePath, finalDestPath);
+            } catch (moveError) {
+                // 如果直接移动失败，尝试复制然后删除的方法
+                if (fs.statSync(sourcePath).isDirectory()) {
+                    // 对于目录，使用递归复制
+                    fs.mkdirSync(finalDestPath, { recursive: true });
+                    copyFolderRecursiveSync(sourcePath, path.dirname(finalDestPath));
+                    fs.rmSync(sourcePath, { recursive: true, force: true });
+                } else {
+                    // 对于文件，使用简单复制
+                    fs.copyFileSync(sourcePath, finalDestPath);
+                    fs.unlinkSync(sourcePath);
+                }
             }
         }
 
-        return {success: true, newPath: finalDestPath};
+        return { success: true, newPath: finalDestPath };
     } catch (error) {
         console.error("File move failed:", error);
 
-        return {success: false, error: error.message};
+        return { success: false, error: error.message };
     }
 });
 
@@ -476,7 +488,7 @@ function copyFolderRecursiveSync(source, target) {
 
     // Create target folder if it doesn't exist
     if (!fs.existsSync(targetFolder)) {
-        fs.mkdirSync(targetFolder, {recursive: true});
+        fs.mkdirSync(targetFolder, { recursive: true });
     }
 
     // Copy all files and subfolders

@@ -8,7 +8,7 @@ import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
-import {handleDragLeave, handleDragOver, validateDragDrop} from "@utils/DragDropHandler.js";
+import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -133,37 +133,7 @@ const MDEFolder = memo(({
         e.dataTransfer.effectAllowed = "move";
         dragEnd(e, dirPath, fullPath);
     };
-
-    // Handle drop events
-    const handleDrop = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragOver(false);
-
-        try {
-            // Get the source path and type
-            const sourcePath = e.dataTransfer.getData("text/plain");
-            const sourceData = JSON.parse(e.dataTransfer.getData("application/json"));
-
-            // Output drag and drop debug information
-            logger.info("[Folder][HandleDrop]", ":", sourcePath, " -> ", fullPath);
-
-            const validation = validateDragDrop(sourcePath, fullPath, sourceData);
-            if (!validation.isValid) {
-                logger.warn("[Folder][HandleDrop]", validation.message);
-                return;
-            }
-
-            // Execute move operation
-            const result = await window.explorer.moveFileOrFolder(sourcePath, fullPath);
-
-            if (!result.success) {
-                logger.warn("Move failed:", result.error);
-            }
-        } catch (error) {
-            logger.error("Error handling drag and drop operation:", error);
-        }
-    };
+    // 使用utils中的通用handleDrop函数
 
     const renderFileItem = useCallback((file, index) => {
         const key = file.name + file.type + index;
@@ -200,7 +170,7 @@ const MDEFolder = memo(({
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
-                onDrop={handleDrop}/>
+                onDrop={(e) => handleDrop(e, fullPath, setIsDragOver)}/>
             {
                 fileList.length !== 0 &&
                 <div className={"mde-folder__file-list"}>

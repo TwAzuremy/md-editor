@@ -8,7 +8,6 @@ import {memo, useEffect, useRef, useState} from "react";
 import MDEExplorer from "@components/MDEExplorer.jsx";
 import MDEExplorerController from "@components/MDEExplorerController.jsx";
 import ElectronStore from "@utils/ElectronStore.js";
-import {TempProvider} from "@renderer/provider/TempProvider.jsx";
 import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
 
 /**
@@ -157,13 +156,11 @@ const MDEFileManager = memo(() => {
                     }
                 </div>
             </MDEPopover>
-            <TempProvider>
-                <MDEExplorer dirPath={currentWorkspace?.path} ref={explorerRef}/>
-                <MDEExplorerController
-                    dirPath={currentWorkspace?.path}
-                    onRefresh={explorerRef.current?.refresh}
-                    onCreateFile={explorerRef.current?.createFile}/>
-            </TempProvider>
+            <MDEExplorer dirPath={currentWorkspace?.path} ref={explorerRef}/>
+            <MDEExplorerController
+                dirPath={currentWorkspace?.path}
+                onRefresh={explorerRef.current?.refresh}
+                onCreateFile={explorerRef.current?.createFile}/>
         </div>
     );
 });

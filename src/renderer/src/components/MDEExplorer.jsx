@@ -3,10 +3,10 @@ import "@components/css/mde-explorer.scss";
 import {useEffect, useState, useCallback, forwardRef, useImperativeHandle, useRef, memo} from "react";
 import MDEFolder from "@components/MDEFolder.jsx";
 import MDEFile from "@components/MDEFile.jsx";
-import {useTemp} from "@renderer/provider/TempProvider.jsx";
 import {logger} from "@utils/Logger.js";
-import ElectronStore from "@utils/ElectronStore.js";
 import {handleDragOver, handleDragLeave, handleDrop} from "@utils/DragDropHandler.js";
+import {useDispatch, useSelector} from "react-redux";
+import {clearSelectedPath, selectSelectedFolder} from "@store/folderSlice.js";
 
 /**
  * The file browser component is used to display the contents of the directory
@@ -29,7 +29,8 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
     const [fileList, setFileList] = useState([]);
     const [isDragOver, setIsDragOver] = useState(false);
 
-    const {setTemp} = useTemp();
+    const dispatch = useDispatch();
+    const taggedFolderPath = useSelector(selectSelectedFolder);
 
     const readDirectory = async (path) => {
         setFileList(await window.explorer.readDirectory(path, false));
@@ -52,8 +53,16 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         await readDirectory(dirPathRef.current);
     }
 
+    const clearSelectedFolder = async () => {
+        const isExits = await window.explorer.checkPathExists(taggedFolderPath);
+
+        if (!isExits) {
+            dispatch(clearSelectedPath());
+        }
+    }
+
     useEffect(() => {
-        setTemp(ElectronStore.KEY_TAGGED_FOLDER, void 0);
+        clearSelectedFolder();
 
         dirPathRef.current = dirPath;
 

@@ -4,26 +4,26 @@ import {memo} from "react";
 import MDEButton from "@components/MDEButton.jsx";
 import IconLoader from "@components/IconLoader.jsx";
 import MDETooltip from "@components/MDETooltip.jsx";
-import {useTemp} from "@renderer/provider/TempProvider.jsx";
-import ElectronStore from "@utils/ElectronStore.js";
+import {useSelector} from "react-redux";
+import {selectSelectedFolder} from "@store/folderSlice.js";
 
 const MDEExplorerController = memo(({
                                         dirPath = null,
                                         onRefresh = null,
                                         onCreateFile = null
                                     }) => {
-    const {getTemp} = useTemp();
+    const taggedFolderPath = useSelector(selectSelectedFolder);
 
     const EXPLORER_CONTROLLER = [
         {
             icon: <IconLoader name={"folder-plus"}/>,
             tip: "New Folder",
-            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), false)
+            onClick: () => onCreateFile?.(taggedFolderPath, false)
         },
         {
             icon: <IconLoader name={"file-plus"}/>,
             tip: "New Markdown File",
-            onClick: () => onCreateFile?.(getTemp(ElectronStore.KEY_TAGGED_FOLDER), true)
+            onClick: () => onCreateFile?.(taggedFolderPath, true)
         },
         {
             icon: <IconLoader name={"refresh"}/>,

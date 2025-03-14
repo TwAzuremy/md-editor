@@ -1,7 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-    expandedFolders: []
+    expandedFolders: [],
+    selectedPath: null
 };
 
 const folderSlice = createSlice({
@@ -17,10 +18,23 @@ const folderSlice = createSlice({
             } else {
                 state.expandedFolders.splice(index, 1);
             }
+        },
+        setSelectedPath: (state, action) => {
+            state.selectedPath = action.payload;
+        },
+        clearSelectedPath: (state) => {
+            state.selectedPath = null;
         }
     }
 });
 
-export const {toggleFolder} = folderSlice.actions;
+export const {
+    toggleFolder,
+    setSelectedPath,
+    clearSelectedPath
+} = folderSlice.actions;
+
 export const selectExpandedFolders = (state) => state.folder.expandedFolders;
+export const selectSelectedFolder = (state) => state.folder.selectedPath;
+
 export default folderSlice.reducer;

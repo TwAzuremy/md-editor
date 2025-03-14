@@ -4,13 +4,11 @@ import MDEButton from "@components/MDEButton.jsx";
 import {useRef, useState, useCallback, memo, useMemo, useEffect} from "react";
 import IconLoader from "@components/IconLoader.jsx";
 import MDEFile from "@components/MDEFile.jsx";
-import {useTemp} from "@renderer/provider/TempProvider.jsx";
-import ElectronStore from "@utils/ElectronStore.js";
 import {logger} from "@utils/Logger.js";
 import {dragEnd} from "@utils/Listener.js";
 import {handleDragLeave, handleDragOver, handleDrop} from "@utils/DragDropHandler.js";
 import {useDispatch, useSelector} from "react-redux";
-import {selectExpandedFolders, toggleFolder} from "@store/folderSlice.js";
+import {selectExpandedFolders, selectSelectedFolder, setSelectedPath, toggleFolder} from "@store/folderSlice.js";
 
 /**
  * folder component, used to display a folder and its contents
@@ -31,14 +29,11 @@ const MDEFolder = memo(({
     const folderEl = useRef(null);
     const watcherIdRef = useRef(null);
 
-    const {getTemp, setTemp} = useTemp();
-
     const fullPath = useMemo(() => dirPath + "\\" + name, [dirPath, name]);
-    // Listen for temporary values.
-    const taggedFolderPath = useMemo(() => getTemp(ElectronStore.KEY_TAGGED_FOLDER), [getTemp]);
 
     const dispatch = useDispatch();
     const expandedFolder = useSelector(selectExpandedFolders);
+    const taggedFolderPath = useSelector(selectSelectedFolder);
     const hasActive = expandedFolder.includes(fullPath);
 
     /**
@@ -48,7 +43,7 @@ const MDEFolder = memo(({
      */
     const handleFolderChange = async () => {
         dispatch(toggleFolder(fullPath));
-        setTemp(ElectronStore.KEY_TAGGED_FOLDER, fullPath);
+        dispatch(setSelectedPath(fullPath));
 
         if (hasActive) {
             setFileList([]);

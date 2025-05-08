@@ -51,7 +51,7 @@ const MDEFolder = memo(({
             // When the folder is closed, remove the listener.
             if (watcherIdRef.current) {
                 await window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(({watcherId: id}) => refresh(id));
+                window.explorer.removeWatchListeners(watcherIdRef.current);
             }
 
             return;
@@ -105,7 +105,7 @@ const MDEFolder = memo(({
             // When the component is unmounted, remove the folder listener and IPC listener
             if (watcherIdRef.current) {
                 window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(watcherIdRef.current, handleWatcherUpdate);
+                window.explorer.removeWatchListeners(watcherIdRef.current);
             }
         };
     }, [hasActive]);

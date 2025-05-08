@@ -72,7 +72,7 @@ const MDEExplorer = memo(forwardRef(({dirPath = null}, ref) => {
         return () => {
             if (watcherIdRef.current) {
                 window.explorer.unwatchFolder(watcherIdRef.current);
-                window.explorer.removeWatchListeners(watcherIdRef.current, handleWatcherUpdate);
+                window.explorer.removeWatchListeners(watcherIdRef.current);
             }
         };
     }, [dirPath]);

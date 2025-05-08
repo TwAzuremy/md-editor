@@ -5,6 +5,20 @@ import {logger} from "../utils/Logger.js";
 // Custom APIs for renderer
 const api = {};
 
+/**
+ * Save the folder update listener event
+ *
+ * @type {Map<String, Function>}
+ */
+const watchListeners = new Map();
+
+/**
+ * Handles watch update event from the main process.
+ *
+ * @param {string} id - Watcher ID from the main process.
+ * @param {string} watcherId - Watcher ID to match against.
+ * @param {function} [callback] - Optional callback function to be called if the watcher IDs match.
+ */
 function handleWatchUpdate(id, watcherId, callback) {
     if (id === watcherId) {
         callback?.();
@@ -90,12 +104,20 @@ if (process.contextIsolated) {
             watchFolder: (dirPath) => ipcRenderer.invoke("watch-folder", dirPath),
             unwatchFolder: (watcherId) => ipcRenderer.invoke("unwatch-folder", watcherId),
             onWatchListeners: (watcherId, callback) => {
-                ipcRenderer.on("watch-folder-update",
-                    (_, {watcherId: id}) => handleWatchUpdate(id, watcherId, callback));
+                if (watchListeners.has(watcherId)) {
+                    ipcRenderer.removeListener("watch-folder-update", watchListeners.get(watcherId));
+                }
+
+                const handler = (_, {watcherId: id}) => handleWatchUpdate(id, watcherId, callback);
+                watchListeners.set(watcherId, handler);
+
+                ipcRenderer.on("watch-folder-update", handler);
             },
-            removeWatchListeners: (watcherId, callback) => {
-                ipcRenderer.removeListener("watch-folder-update",
-                    (_, {watcherId: id}) => handleWatchUpdate(id, watcherId, callback));
+            removeWatchListeners: (watcherId) => {
+                if (watchListeners.has(watcherId)) {
+                    ipcRenderer.removeListener("watch-folder-update", watchListeners.get(watcherId));
+                    watchListeners.delete(watcherId);
+                }
             }
         });
 
